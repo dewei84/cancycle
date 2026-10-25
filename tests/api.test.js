@@ -57,6 +57,11 @@ test("picks today's forecast and converts its bounds to numbers", () => {
   assert.equal(forecastForDate(records, '2026-10-26'), null);
 });
 
+test('PSI parser rejects API errors and unwrapped tables', () => {
+  assert.throws(() => parsePsiPage({ success: false, error: { message: 'boom' } }), /boom/);
+  assert.throws(() => parsePsiPage(psiJson.result), /unexpected response/);
+});
+
 test('real data from 25 Oct 2026 12:00 gives Easy ride for East', () => {
   const pm = parsePm25(pm25Json);
   const psi = forecastForDate(parsePsiPage(psiJson).records, '2026-10-25');
@@ -81,8 +86,9 @@ test('fetchPsiForecast reads one page when it holds every record', async () => {
 });
 
 test('fetchPsiForecast follows offsets when the table spans pages', async () => {
-  const first = { records: psiJson.records.slice(0, 3), total: 6 };
-  const second = { records: psiJson.records.slice(3), total: 6 };
+  const all = psiJson.result.records;
+  const first = { success: true, result: { records: all.slice(0, 3), total: 6 } };
+  const second = { success: true, result: { records: all.slice(3), total: 6 } };
   const { impl, calls } = fakeFetch([first, second]);
   const psi = await fetchPsiForecast('2026-10-25', impl);
   assert.equal(psi.upper, 130);
