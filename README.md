@@ -2,17 +2,16 @@
 
 Outdoor cycling advisory based on NEA PSI and PM2.5 data.
 
-**Can I Cycle?** is a mobile-first web app for cyclists in Singapore. Pick your region and it gives one verdict, **Go**, **Easy ride** or **Don't ride**, from NEA's live data:
+**Can I Cycle?** is a mobile-first web app for cyclists in Singapore. Pick your region and it gives one verdict, **Go**, **Easy ride** or **Don't ride**, from the latest **1-hr PM2.5** reading for that region, mapped to NEA's advice for healthy persons.
 
-- the latest **1-hr PM2.5** reading for your region (for riding now), and
-- today's **24-hr PSI forecast** for the island (for planning the day), judged on its upper bound.
+| 1-hr PM2.5 (µg/m³) | NEA band | Verdict |
+| --- | --- | --- |
+| 0–55 | Band 1, Normal | Go |
+| 56–150 | Band 2, Elevated | Easy ride |
+| 151–250 | Band 3, High | Don't ride |
+| 251 and above | Band 4, Very High | Don't ride |
 
-Each reading is mapped to NEA's advice for healthy persons doing prolonged or strenuous outdoor exertion, and the stricter of the two wins.
-
-| Reading | Go | Easy ride | Don't ride |
-| --- | --- | --- | --- |
-| 1-hr PM2.5 (µg/m³) | Band 1: 0–55 | Band 2: 56–150 | Band 3–4: 151 and above |
-| 24-hr PSI forecast, upper bound | 0–100 | 101–200 | 201 and above |
+Today's **24-hr PSI forecast** for the island is shown for information only. It is a day-long outlook, so it does not affect the verdict.
 
 The guidance is for healthy adults and is not medical advice.
 

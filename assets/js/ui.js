@@ -89,14 +89,6 @@ function renderPsi(psi) {
   $('psi-band').dataset.level = band.verdict;
 }
 
-function reasonText(decision, psi) {
-  if (decision.source === 'psi') {
-    return `Set by today's PSI forecast, which reaches the ${psiBand(psi.upper).name} range.`;
-  }
-  if (!psi) return "Based on the latest PM2.5 reading. Today's PSI forecast isn't available.";
-  return 'Set by the latest 1-hr PM2.5 reading for your region.';
-}
-
 // state: { region, pm, psi, decision, stale, errors: { pm, psi }, now }
 export function render(state) {
   const { region, pm, psi, decision, stale, errors, now } = state;
@@ -113,7 +105,7 @@ export function render(state) {
   $('verdict-label').textContent = verdict ? verdict.label : 'No data';
   $('verdict-advice').textContent = verdict ? `NEA advice: ${decision.advice}` : '';
   $('verdict-reason').textContent = verdict
-    ? reasonText(decision, psi)
+    ? `Based on the latest 1-hr PM2.5 reading for ${regionLabel(region)}.`
     : "We couldn't get a current PM2.5 reading, so there's no verdict right now.";
 
   const updated = pm?.timestamp ? `updated ${formatTime(pm.timestamp)}` : 'no current reading';
