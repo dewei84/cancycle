@@ -28,39 +28,27 @@ test('invalid readings have no band', () => {
   }
 });
 
-test('verdicts map from each band', () => {
-  assert.equal(decide({ pm25: 34, psiUpper: 80 }).verdict.id, 'go');
-  assert.equal(decide({ pm25: 80, psiUpper: 80 }).verdict.id, 'easy');
-  assert.equal(decide({ pm25: 160, psiUpper: 80 }).verdict.id, 'stop');
-  assert.equal(decide({ pm25: 300, psiUpper: 80 }).verdict.id, 'stop');
-  assert.equal(decide({ pm25: 34, psiUpper: 150 }).verdict.id, 'easy');
-  assert.equal(decide({ pm25: 34, psiUpper: 250 }).verdict.id, 'stop');
-  assert.equal(decide({ pm25: 34, psiUpper: 400 }).verdict.id, 'stop');
+test('verdicts map from each PM2.5 band', () => {
+  assert.equal(decide({ pm25: 34 }).verdict.id, 'go');
+  assert.equal(decide({ pm25: 80 }).verdict.id, 'easy');
+  assert.equal(decide({ pm25: 160 }).verdict.id, 'stop');
+  assert.equal(decide({ pm25: 300 }).verdict.id, 'stop');
 });
 
-test('the stricter feed wins and supplies the advice', () => {
-  const psiWins = decide({ pm25: 34, psiUpper: 130 });
-  assert.equal(psiWins.source, 'psi');
-  assert.equal(psiWins.advice, 'Reduce prolonged or strenuous outdoor physical exertion.');
-
-  const pmWins = decide({ pm25: 200, psiUpper: 130 });
-  assert.equal(pmWins.source, 'pm25');
-  assert.equal(pmWins.verdict.id, 'stop');
+test('the verdict carries NEA advice for its PM2.5 band', () => {
+  assert.equal(decide({ pm25: 80 }).advice, 'Reduce strenuous outdoor activity for the next hour.');
 });
 
-test('a tie keeps the PM2.5 reading as the source', () => {
-  assert.equal(decide({ pm25: 80, psiUpper: 130 }).source, 'pm25');
+test('the PSI forecast never changes the verdict', () => {
+  // Today's real forecast (upper bound 130, Unhealthy) with a Band 1 reading.
+  assert.equal(decide({ pm25: 34, psiUpper: 130 }).verdict.id, 'go');
+  assert.equal(decide({ pm25: 34, psiUpper: 400 }).verdict.id, 'go');
 });
 
 test('no PM2.5 reading means no verdict', () => {
-  const d = decide({ pm25: null, psiUpper: 80 });
+  const d = decide({ pm25: null });
   assert.equal(d.verdict, null);
-});
-
-test('missing forecast falls back to PM2.5 alone', () => {
-  const d = decide({ pm25: 34, psiUpper: null });
-  assert.equal(d.verdict.id, 'go');
-  assert.equal(d.source, 'pm25');
+  assert.equal(d.advice, null);
 });
 
 test('staleness uses the reading time', () => {

@@ -22,7 +22,7 @@ function draw() {
   ui.render({
     ...state,
     now,
-    decision: decide({ pm25, psiUpper: state.psi?.upper }),
+    decision: decide({ pm25 }),
     stale: state.pm ? isStale(state.pm.timestamp, now, STALE_AFTER_MS) : false,
   });
 }

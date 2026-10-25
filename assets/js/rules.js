@@ -55,22 +55,13 @@ export function psiBand(upperBound) {
   return bandFor(PSI_BANDS, upperBound);
 }
 
-// Combines the two feeds; the stricter verdict wins.
-// Returns { verdict, source, advice } where source is 'pm25' | 'psi' | null.
-// PM2.5 is required: without a current reading there is no verdict.
-export function decide({ pm25, psiUpper }) {
+// The verdict comes from the current 1-hr PM2.5 reading only. The PSI forecast
+// is a 24-hr outlook, so it is shown for information but never sets the verdict.
+// Returns { verdict, advice }; both are null without a current reading.
+export function decide({ pm25 }) {
   const pm = pm25Band(pm25);
-  if (!pm) return { verdict: null, source: null, advice: null };
-
-  const psi = psiBand(psiUpper);
-  const pmVerdict = VERDICTS[pm.verdict];
-  if (!psi) return { verdict: pmVerdict, source: 'pm25', advice: pm.advice };
-
-  const psiVerdict = VERDICTS[psi.verdict];
-  if (psiVerdict.rank > pmVerdict.rank) {
-    return { verdict: psiVerdict, source: 'psi', advice: psi.advice };
-  }
-  return { verdict: pmVerdict, source: 'pm25', advice: pm.advice };
+  if (!pm) return { verdict: null, advice: null };
+  return { verdict: VERDICTS[pm.verdict], advice: pm.advice };
 }
 
 // True when the reading is older than maxAgeMs (or has no usable time).
