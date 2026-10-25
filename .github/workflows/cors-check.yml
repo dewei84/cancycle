@@ -2,19 +2,29 @@ name: CORS check (temporary)
 on:
   push:
     branches: [diag/cors-check]
+    paths: [.github/workflows/cors-check.yml]
+permissions:
+  contents: write
 jobs:
   check:
     runs-on: ubuntu-latest
     steps:
-      - name: PSI forecast datastore, GET with Pages origin
+      - uses: actions/checkout@v4
+      - name: Collect headers
         run: |
-          curl -sS -D - -o /dev/null -H "Origin: https://dewei84.github.io" "https://data.gov.sg/api/action/datastore_search?resource_id=d_c2c7fa70f297cdaee13afbe53a900eb9"
-      - name: PSI forecast datastore, preflight
+          O="Origin: https://dewei84.github.io"
+          PSI="https://data.gov.sg/api/action/datastore_search?resource_id=d_c2c7fa70f297cdaee13afbe53a900eb9"
+          PM="https://api-open.data.gov.sg/v2/real-time/api/pm25"
+          {
+            echo "=== PSI GET"; curl -sS -D - -o /dev/null -H "$O" "$PSI"
+            echo "=== PSI OPTIONS"; curl -sS -D - -o /dev/null -X OPTIONS -H "$O" -H "Access-Control-Request-Method: GET" "$PSI"
+            echo "=== PM GET"; curl -sS -D - -o /dev/null -H "$O" "$PM"
+            echo "=== PSI body"; curl -sS "$PSI" | head -c 1500; echo
+          } > cors-report.txt 2>&1
+      - name: Save report
         run: |
-          curl -sS -D - -o /dev/null -X OPTIONS -H "Origin: https://dewei84.github.io" -H "Access-Control-Request-Method: GET" "https://data.gov.sg/api/action/datastore_search?resource_id=d_c2c7fa70f297cdaee13afbe53a900eb9"
-      - name: PM2.5 real-time API, GET with Pages origin
-        run: |
-          curl -sS -D - -o /dev/null -H "Origin: https://dewei84.github.io" "https://api-open.data.gov.sg/v2/real-time/api/pm25"
-      - name: PSI forecast body
-        run: |
-          curl -sS "https://data.gov.sg/api/action/datastore_search?resource_id=d_c2c7fa70f297cdaee13afbe53a900eb9" | head -c 1500
+          git config user.name "github-actions[bot]"
+          git config user.email "41898099+github-actions[bot]@users.noreply.github.com"
+          git add cors-report.txt
+          git commit -m "CORS report"
+          git push
