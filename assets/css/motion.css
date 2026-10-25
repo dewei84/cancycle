@@ -1,0 +1,70 @@
+/* Motion. The ink wheels spin fast for Go, slowly for Easy ride,
+   and stop for Don't ride, stale data or no data. */
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+@keyframes drift {
+  from { transform: translateX(0); }
+  to { transform: translateX(-36px); }
+}
+
+@keyframes ink-in {
+  from { transform: scaleX(0); opacity: 0; }
+  to { transform: scaleX(1); opacity: 0.55; }
+}
+
+@keyframes rise {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes pulse {
+  50% { opacity: 0.4; }
+}
+
+.art__wheel--large {
+  animation: spin var(--spin-large) linear infinite;
+}
+
+.art__wheel--small {
+  animation: spin var(--spin-small) linear infinite reverse;
+}
+
+.art__streaks {
+  animation: drift 7s ease-in-out infinite alternate;
+}
+
+body[data-verdict='go'] { --spin-large: 9s; --spin-small: 16s; }
+body[data-verdict='easy'] { --spin-large: 28s; --spin-small: 46s; }
+
+body[data-verdict='stop'] .art__wheel,
+body[data-verdict='unknown'] .art__wheel,
+body[data-stale] .art__wheel,
+body[data-verdict='stop'] .art__streaks,
+body[data-verdict='unknown'] .art__streaks {
+  animation-play-state: paused;
+}
+
+.verdict__stroke {
+  transform-origin: left center;
+  animation: ink-in 1.4s cubic-bezier(0.2, 0.7, 0.2, 1) 0.3s both;
+}
+
+body[data-verdict='loading'] .verdict__label,
+body[data-loading] .icon-button img {
+  animation: pulse 1.2s ease-in-out infinite;
+}
+
+body:not([data-verdict='loading']) .verdict {
+  animation: rise 0.8s ease-out both;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation: none !important;
+    transition: none !important;
+  }
+}

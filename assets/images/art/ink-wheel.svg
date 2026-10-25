@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 320" width="320" height="320">
+  <!-- Dry-brush ink wheel: concentric broken rings, roughened by a displacement filter. -->
+  <defs>
+    <filter id="dry" x="-5%" y="-5%" width="110%" height="110%">
+      <feTurbulence type="fractalNoise" baseFrequency="0.035 0.6" numOctaves="2" seed="9"/>
+      <feDisplacementMap in="SourceGraphic" scale="5"/>
+    </filter>
+  </defs>
+  <g filter="url(#dry)" fill="none" stroke="#14130F" stroke-linecap="round">
+    <circle cx="160" cy="160" r="150" stroke-width="2" stroke-opacity="0.10" stroke-dasharray="620 80"/>
+    <circle cx="160" cy="160" r="142" stroke-width="3" stroke-opacity="0.13" stroke-dasharray="540 120"/>
+    <circle cx="160" cy="160" r="133" stroke-width="2" stroke-opacity="0.16" stroke-dasharray="700 60"/>
+    <circle cx="160" cy="160" r="124" stroke-width="4" stroke-opacity="0.12" stroke-dasharray="480 150"/>
+    <circle cx="160" cy="160" r="114" stroke-width="2" stroke-opacity="0.18" stroke-dasharray="600 110"/>
+    <circle cx="160" cy="160" r="104" stroke-width="3" stroke-opacity="0.14" stroke-dasharray="520 100"/>
+    <circle cx="160" cy="160" r="93" stroke-width="2" stroke-opacity="0.10" stroke-dasharray="400 180"/>
+    <circle cx="160" cy="160" r="40" stroke-width="10" stroke-opacity="0.10" stroke-dasharray="180 70"/>
+    <circle cx="160" cy="160" r="24" stroke-width="6" stroke-opacity="0.16" stroke-dasharray="110 40"/>
+  </g>
+</svg>

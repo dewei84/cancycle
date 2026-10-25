@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 400" width="400" height="400" preserveAspectRatio="none">
+  <!-- Fine paper grain, drawn over the paper colour. -->
+  <filter id="grain">
+    <feTurbulence type="fractalNoise" baseFrequency="0.9" numOctaves="3" seed="4"/>
+    <feColorMatrix values="0 0 0 0 0.08  0 0 0 0 0.08  0 0 0 0 0.06  0 0 0 0.09 0"/>
+  </filter>
+  <rect width="400" height="400" filter="url(#grain)"/>
+</svg>

@@ -1,0 +1,39 @@
+/* Design tokens: ink on paper. */
+:root {
+  --paper: #ecebe6;
+  --paper-card: rgba(250, 249, 245, 0.78);
+  --ink: #14130f;
+  --ink-soft: #4a463e;
+  --ink-line: rgba(20, 19, 15, 0.18);
+  --ink-line-strong: rgba(20, 19, 15, 0.35);
+  --on-ink: #f7f6f1;
+
+  /* Verdict inks. Text colours pass 4.5:1 on the paper. */
+  --go-ink: #2f6b3f;
+  --go-wash: #3f8a52;
+  --easy-ink: #8a4a10;
+  --easy-wash: #c7792a;
+  --stop-ink: #a3261b;
+  --stop-wash: #c2402f;
+
+  --font-display: 'Fraunces', Georgia, 'Times New Roman', serif;
+  --font-body: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 24px;
+
+  /* Slightly uneven corners for a hand-made feel. */
+  --radius-card: 26px 20px 28px 18px;
+  --radius-card-alt: 20px 28px 18px 26px;
+  --radius-pill: 22px 18px 24px 16px;
+
+  --tap: 44px;
+  --max-width: 480px;
+
+  /* Wheel spin speed, set per verdict in motion.css. */
+  --spin-large: 28s;
+  --spin-small: 46s;
+}

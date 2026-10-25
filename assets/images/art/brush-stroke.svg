@@ -1,0 +1,4 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 250 34" width="250" height="34" preserveAspectRatio="none">
+  <!-- Tapered brush stroke, used as a mask under the verdict word. -->
+  <path d="M2 22 C40 10, 120 6, 246 14 C200 18, 140 22, 90 26 C60 28, 24 30, 2 28 Z" fill="#000"/>
+</svg>

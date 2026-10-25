@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+  <!-- App icon: an ink wheel on paper. -->
+  <rect width="512" height="512" fill="#ECEBE6"/>
+  <g fill="none" stroke="#14130F" stroke-linecap="round">
+    <circle cx="256" cy="256" r="176" stroke-width="22" stroke-dasharray="900 206"/>
+    <circle cx="256" cy="256" r="140" stroke-width="10" stroke-opacity="0.55" stroke-dasharray="620 260"/>
+    <circle cx="256" cy="256" r="52" stroke-width="30" stroke-dasharray="250 77"/>
+  </g>
+  <path d="M120 400 C200 380, 330 372, 430 386 C350 394, 240 404, 120 412 Z" fill="#C7792A" fill-opacity="0.7"/>
+</svg>

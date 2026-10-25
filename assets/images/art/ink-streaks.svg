@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 470 500" width="470" height="500" preserveAspectRatio="none">
+  <!-- Motion streaks: thin ink trails across the page. -->
+  <g fill="none" stroke="#14130F" stroke-linecap="round" vector-effect="non-scaling-stroke">
+    <path d="M0 20 C100 2, 220 32, 470 8" stroke-width="2" stroke-opacity="0.18" stroke-dasharray="180 40 60 30"/>
+    <path d="M0 32 C140 24, 260 46, 470 26" stroke-width="1" stroke-opacity="0.14" stroke-dasharray="220 30 90 40"/>
+    <path d="M80 248 C180 234, 280 258, 470 240" stroke-width="3" stroke-opacity="0.08"/>
+    <path d="M0 392 C110 376, 240 402, 470 382" stroke-width="2" stroke-opacity="0.12" stroke-dasharray="200 50 40 30"/>
+    <path d="M40 404 C160 396, 280 414, 470 400" stroke-width="1" stroke-opacity="0.10"/>
+  </g>
+</svg>

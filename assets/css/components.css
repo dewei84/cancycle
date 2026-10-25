@@ -1,0 +1,206 @@
+/* Header */
+.app__title {
+  font-family: var(--font-display);
+  font-size: 26px;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+}
+
+.app__updated {
+  font-size: 13px;
+  color: var(--ink-soft);
+}
+
+.icon-button {
+  flex: none;
+  width: var(--tap);
+  height: var(--tap);
+  border-radius: 50%;
+  border: 1.5px solid var(--ink);
+  background: var(--paper-card);
+  display: grid;
+  place-items: center;
+  cursor: pointer;
+}
+
+.icon-button:disabled {
+  cursor: progress;
+}
+
+/* Region picker */
+.regions {
+  margin: 0;
+  padding: 0;
+  border: 0;
+  min-width: 0;
+}
+
+.regions__legend {
+  padding: 0;
+  margin-bottom: var(--space-2);
+  font-size: 13px;
+  color: var(--ink-soft);
+}
+
+.regions__options {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 6px;
+}
+
+.region {
+  min-height: var(--tap);
+  padding: 0 2px;
+  border-radius: var(--radius-pill);
+  border: 1px solid var(--ink-line-strong);
+  background: var(--paper-card);
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+}
+
+.region[aria-pressed='true'] {
+  border-color: var(--ink);
+  background: var(--ink);
+  color: var(--on-ink);
+  font-weight: 600;
+}
+
+/* Verdict */
+.verdict {
+  padding: 18px 4px 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.verdict__eyebrow {
+  font-size: 12px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--ink-soft);
+}
+
+.verdict__word {
+  position: relative;
+  align-self: flex-start;
+}
+
+.verdict__label {
+  position: relative;
+  font-family: var(--font-display);
+  font-size: clamp(44px, 14vw, 64px);
+  line-height: 1;
+  font-weight: 800;
+  letter-spacing: -0.03em;
+}
+
+/* Brush stroke under the verdict, tinted by the verdict's wash colour. */
+.verdict__stroke {
+  position: absolute;
+  left: -6px;
+  right: -10px;
+  bottom: 0;
+  height: 0.6em;
+  font-size: clamp(44px, 14vw, 64px);
+  background: var(--stroke, transparent);
+  opacity: 0.55;
+  -webkit-mask: url('../images/art/brush-stroke.svg') no-repeat center / 100% 100%;
+  mask: url('../images/art/brush-stroke.svg') no-repeat center / 100% 100%;
+}
+
+body[data-verdict='go'] { --stroke: var(--go-wash); }
+body[data-verdict='easy'] { --stroke: var(--easy-wash); }
+body[data-verdict='stop'] { --stroke: var(--stop-wash); }
+
+.verdict__advice {
+  margin-top: 6px;
+  font-size: 15px;
+}
+
+.verdict__reason {
+  font-size: 13px;
+  color: var(--ink-soft);
+}
+
+/* Notice for stale data or failed loads */
+.notice {
+  padding: var(--space-3) var(--space-4);
+  border: 1.5px dashed var(--ink-line-strong);
+  border-radius: var(--radius-pill);
+  background: var(--paper-card);
+  font-size: 13px;
+}
+
+/* Reading cards */
+.card {
+  padding: var(--space-4);
+  background: var(--paper-card);
+  border: 1px solid var(--ink-line);
+  border-radius: var(--radius-card);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+  min-width: 0;
+}
+
+.card--alt {
+  border-radius: var(--radius-card-alt);
+}
+
+.card__label,
+.card__note {
+  font-size: 12px;
+  color: var(--ink-soft);
+}
+
+.card__value {
+  font-family: var(--font-display);
+  font-size: 34px;
+  font-weight: 600;
+  line-height: 1.15;
+}
+
+.card__unit {
+  font-family: var(--font-body);
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--ink-soft);
+}
+
+.card__band {
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.card__band[data-level='1'],
+.card__band[data-level='go'] { color: var(--go-ink); }
+.card__band[data-level='2'],
+.card__band[data-level='easy'] { color: var(--easy-ink); }
+.card__band[data-level='3'],
+.card__band[data-level='4'],
+.card__band[data-level='stop'] { color: var(--stop-ink); }
+
+/* Regional strip */
+.strip {
+  padding: 14px var(--space-4);
+  gap: var(--space-2);
+}
+
+.strip__grid {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: var(--space-1);
+  text-align: center;
+}
+
+.strip__item dt {
+  font-size: 12px;
+  color: var(--ink-soft);
+}
+
+.strip__item dd {
+  font-family: var(--font-display);
+  font-size: 18px;
+  font-weight: 600;
+}
