@@ -1,0 +1,44 @@
+=== PSI GET
+HTTP/2 200 
+date: Sun, 25 Oct 2026 05:44:13 GMT
+content-type: application/json
+x-content-type-options: nosniff
+vary: Accept-Encoding
+access-control-allow-origin: *
+apigw-requestid: FySPNgEKSQ0EMCQ=
+strict-transport-security: max-age=31536000; includeSubDomains
+last-modified: Sun, 25 Oct 2026 05:44:13 GMT
+cache-control: max-age=300
+cf-cache-status: MISS
+set-cookie: _cfuvid=zSsAJDhOTITUr1jDqdvYfpRDuwbOIXW3nVvHk8B1icA-1792907053.1519687-1.0.1.1-vMc94zFKcamz9S36Sk2kyjZPz.X3w96V7T8hZk_YrfA; HttpOnly; SameSite=None; Secure; Path=/; Domain=data.gov.sg
+server: cloudflare
+cf-ray: a4fee87a3ee6b1ca-SEA
+
+=== PSI OPTIONS
+HTTP/2 204 
+date: Sun, 25 Oct 2026 05:44:14 GMT
+access-control-allow-origin: *
+access-control-allow-methods: GET,OPTIONS,POST
+access-control-allow-headers: *
+apigw-requestid: FySPWjGVSQ0EPmA=
+cf-cache-status: DYNAMIC
+set-cookie: _cfuvid=KUolNpgVTw4dQU8pcB5p6AmZ1w66AngD47h1npIvMh8-1792907054.038225-1.0.1.1-Pz.4tcJeJ7ASY8rgmmaOq520M.PeKKKhlDpgDRS4Png; HttpOnly; SameSite=None; Secure; Path=/; Domain=data.gov.sg
+strict-transport-security: max-age=31536000; includeSubDomains
+x-content-type-options: nosniff
+server: cloudflare
+cf-ray: a4fee87fb9dcd44d-SEA
+
+=== PM GET
+HTTP/2 200 
+date: Sun, 25 Oct 2026 05:44:14 GMT
+content-type: application/json; charset=utf-8
+content-length: 623
+access-control-allow-origin: *
+cf-cache-status: DYNAMIC
+x-content-type-options: nosniff
+strict-transport-security: max-age=31536000; includeSubDomains
+server: cloudflare
+cf-ray: a4fee88449d05e51-SEA
+
+=== PSI body
+{"success":true,"result":{"resource_id":"d_c2c7fa70f297cdaee13afbe53a900eb9","fields":[{"type":"text","id":"forecast_date"},{"type":"numeric","id":"forecast_lower_bound"},{"type":"numeric","id":"forecast_upper_bound"},{"type":"int4","id":"_id"}],"records":[{"_id":1,"forecast_date":"2026-10-20","forecast_lower_bound":"90","forecast_upper_bound":"160"},{"_id":2,"forecast_date":"2026-10-21","forecast_lower_bound":"110","forecast_upper_bound":"180"},{"_id":3,"forecast_date":"2026-10-22","forecast_lower_bound":"101","forecast_upper_bound":"160"},{"_id":4,"forecast_date":"2026-10-23","forecast_lower_bound":"101","forecast_upper_bound":"150"},{"_id":5,"forecast_date":"2026-10-24","forecast_lower_bound":"90","forecast_upper_bound":"140"},{"_id":6,"forecast_date":"2026-10-25","forecast_lower_bound":"80","forecast_upper_bound":"130"}],"_links":{"start":"/api/action/datastore_search?resource_id=d_c2c7fa70f297cdaee13afbe53a900eb9","next":"/api/action/datastore_search?resource_id=d_c2c7fa70f297cdaee13afbe53a900eb9&offset=100"},"total":6}}
