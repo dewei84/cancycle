@@ -2,12 +2,12 @@
 
 Outdoor cycling advisory based on NEA PSI and PM2.5 data.
 
-**Can I Cycle?** is a mobile-first web app for cyclists in Singapore. Pick your region and it gives one verdict, **Yes, let’s go!**, **Better Not** or **Go back to sleep**, from the latest **1-hr PM2.5** reading for that region, mapped to NEA's advice for healthy persons.
+**Can I Cycle?** is a mobile-first web app for cyclists in Singapore. Pick your region and it gives one verdict, **Yes, let’s go!**, **Better not** or **Go back to sleep**, from the latest **1-hr PM2.5** reading for that region, mapped to NEA's advice for healthy persons.
 
 | 1-hr PM2.5 (µg/m³) | NEA band | Verdict |
 | --- | --- | --- |
 | 0–55 | Band 1, Normal | Yes, let’s go! |
-| 56–150 | Band 2, Elevated | Better Not |
+| 56–150 | Band 2, Elevated | Better not |
 | 151–250 | Band 3, High | Go back to sleep |
 | 251 and above | Band 4, Very High | Go back to sleep |
 

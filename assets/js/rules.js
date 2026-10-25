@@ -9,7 +9,7 @@
 
 export const VERDICTS = {
   go: { id: 'go', label: 'Yes, let’s go!', rank: 0 },
-  easy: { id: 'easy', label: 'Better Not', rank: 1 },
+  easy: { id: 'easy', label: 'Better not', rank: 1 },
   stop: { id: 'stop', label: 'Go back to sleep', rank: 2 },
 };
 
