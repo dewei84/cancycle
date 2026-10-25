@@ -1,0 +1,94 @@
+<!doctype html>
+<html lang="en-SG">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Can I Cycle?</title>
+  <meta name="description" content="Should you ride today? A cycling verdict for Singapore from NEA's live PM2.5 readings and PSI forecast.">
+  <meta name="theme-color" content="#ECEBE6">
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="icon" href="assets/images/icons/icon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="assets/images/icons/apple-touch-icon.png">
+  <link rel="preload" href="assets/fonts/fraunces-latin-opsz.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="stylesheet" href="assets/css/tokens.css">
+  <link rel="stylesheet" href="assets/css/base.css">
+  <link rel="stylesheet" href="assets/css/layout.css">
+  <link rel="stylesheet" href="assets/css/components.css">
+  <link rel="stylesheet" href="assets/css/motion.css">
+  <script type="module" src="assets/js/main.js"></script>
+</head>
+<body data-verdict="loading">
+  <div class="art" aria-hidden="true">
+    <img class="art__paper" src="assets/images/art/paper-grain.svg" alt="">
+    <img class="art__wheel art__wheel--large" src="assets/images/art/ink-wheel.svg" alt="">
+    <img class="art__wheel art__wheel--small" src="assets/images/art/ink-wheel.svg" alt="">
+    <img class="art__streaks" src="assets/images/art/ink-streaks.svg" alt="">
+  </div>
+
+  <main class="app">
+    <header class="app__header">
+      <div>
+        <h1 class="app__title">Can I Cycle?</h1>
+        <p class="app__updated" id="updated">Singapore · loading the latest readings…</p>
+      </div>
+      <button class="icon-button" id="refresh" type="button" aria-label="Refresh data">
+        <img src="assets/images/icons/refresh.svg" alt="" width="20" height="20">
+      </button>
+    </header>
+
+    <fieldset class="regions">
+      <legend class="regions__legend">Your region</legend>
+      <div class="regions__options" id="region-options">
+        <button class="region" type="button" data-region="north" aria-pressed="false">North</button>
+        <button class="region" type="button" data-region="south" aria-pressed="false">South</button>
+        <button class="region" type="button" data-region="east" aria-pressed="false">East</button>
+        <button class="region" type="button" data-region="west" aria-pressed="false">West</button>
+        <button class="region" type="button" data-region="central" aria-pressed="false">Central</button>
+      </div>
+    </fieldset>
+
+    <section class="verdict" aria-live="polite" aria-labelledby="verdict-label">
+      <p class="verdict__eyebrow">Right now</p>
+      <div class="verdict__word">
+        <span class="verdict__stroke" aria-hidden="true"></span>
+        <h2 class="verdict__label" id="verdict-label">Checking…</h2>
+      </div>
+      <p class="verdict__advice" id="verdict-advice"></p>
+      <p class="verdict__reason" id="verdict-reason"></p>
+    </section>
+
+    <p class="notice" id="notice" role="status" hidden></p>
+
+    <div class="cards">
+      <section class="card" aria-labelledby="pm-heading">
+        <p class="card__label" id="pm-heading">PM2.5 now · <span id="pm-region">East</span></p>
+        <p class="card__value"><span id="pm-value">–</span><span class="card__unit"> µg/m³</span></p>
+        <p class="card__band" id="pm-band"></p>
+        <p class="card__note" id="pm-time"></p>
+      </section>
+      <section class="card card--alt" aria-labelledby="psi-heading">
+        <p class="card__label" id="psi-heading">PSI forecast · today</p>
+        <p class="card__value" id="psi-range">–</p>
+        <p class="card__band" id="psi-band"></p>
+        <p class="card__note">24-hr PSI, island-wide</p>
+      </section>
+    </div>
+
+    <section class="card strip" aria-labelledby="strip-heading">
+      <p class="card__label" id="strip-heading">PM2.5 across Singapore (µg/m³)</p>
+      <dl class="strip__grid">
+        <div class="strip__item"><dt>North</dt><dd data-region-value="north">–</dd></div>
+        <div class="strip__item"><dt>South</dt><dd data-region-value="south">–</dd></div>
+        <div class="strip__item"><dt>East</dt><dd data-region-value="east">–</dd></div>
+        <div class="strip__item"><dt>West</dt><dd data-region-value="west">–</dd></div>
+        <div class="strip__item"><dt>Central</dt><dd data-region-value="central">–</dd></div>
+      </dl>
+    </section>
+
+    <footer class="app__footer">
+      Data: NEA via <a href="https://data.gov.sg">data.gov.sg</a>. Refreshes every 15 minutes.
+      Guidance for healthy adults, based on NEA advisories; not medical advice.
+    </footer>
+  </main>
+</body>
+</html>
