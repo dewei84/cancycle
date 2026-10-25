@@ -8,9 +8,9 @@
 // active cyclists, and cycling counts as prolonged or strenuous exertion.
 
 export const VERDICTS = {
-  go: { id: 'go', label: 'Go', rank: 0 },
-  easy: { id: 'easy', label: 'Easy ride', rank: 1 },
-  stop: { id: 'stop', label: "Don't ride", rank: 2 },
+  go: { id: 'go', label: 'Yes, let’s go!', rank: 0 },
+  easy: { id: 'easy', label: 'Better not', rank: 1 },
+  stop: { id: 'stop', label: 'Go back to sleep', rank: 2 },
 };
 
 export const PM25_BANDS = [
