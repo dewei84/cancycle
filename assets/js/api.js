@@ -50,11 +50,16 @@ export function parsePm25(json) {
 }
 
 // One page of the PSI forecast datastore -> { records, total }
+// The API wraps the table in { success, result: { records, total, ... } }.
 export function parsePsiPage(json) {
-  if (!json || !Array.isArray(json.records)) {
+  if (json?.success === false) {
+    throw new Error(json.error?.message || 'PSI forecast API returned an error');
+  }
+  const result = json?.result;
+  if (!result || !Array.isArray(result.records)) {
     throw new Error('PSI forecast returned an unexpected response');
   }
-  return { records: json.records, total: toNumber(json.total) ?? json.records.length };
+  return { records: result.records, total: toNumber(result.total) ?? result.records.length };
 }
 
 // Picks the forecast for a date (YYYY-MM-DD) -> { date, lower, upper } or null.

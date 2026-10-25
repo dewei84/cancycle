@@ -1,22 +1,67 @@
 {
-  "resource_id": "d_c2c7fa70f297cdaee13afbe53a900eb9",
-  "fields": [
-    { "type": "text", "id": "forecast_date" },
-    { "type": "numeric", "id": "forecast_lower_bound" },
-    { "type": "numeric", "id": "forecast_upper_bound" },
-    { "type": "int4", "id": "_id" }
-  ],
-  "records": [
-    { "_id": 1, "forecast_date": "2026-10-20", "forecast_lower_bound": "90", "forecast_upper_bound": "160" },
-    { "_id": 2, "forecast_date": "2026-10-21", "forecast_lower_bound": "110", "forecast_upper_bound": "180" },
-    { "_id": 3, "forecast_date": "2026-10-22", "forecast_lower_bound": "101", "forecast_upper_bound": "160" },
-    { "_id": 4, "forecast_date": "2026-10-23", "forecast_lower_bound": "101", "forecast_upper_bound": "150" },
-    { "_id": 5, "forecast_date": "2026-10-24", "forecast_lower_bound": "90", "forecast_upper_bound": "140" },
-    { "_id": 6, "forecast_date": "2026-10-25", "forecast_lower_bound": "80", "forecast_upper_bound": "130" }
-  ],
-  "_links": {
-    "start": "/api/action/datastore_search?resource_id=d_c2c7fa70f297cdaee13afbe53a900eb9",
-    "next": "/api/action/datastore_search?resource_id=d_c2c7fa70f297cdaee13afbe53a900eb9&offset=100"
-  },
-  "total": 6
+  "success": true,
+  "result": {
+    "resource_id": "d_c2c7fa70f297cdaee13afbe53a900eb9",
+    "fields": [
+      {
+        "type": "text",
+        "id": "forecast_date"
+      },
+      {
+        "type": "numeric",
+        "id": "forecast_lower_bound"
+      },
+      {
+        "type": "numeric",
+        "id": "forecast_upper_bound"
+      },
+      {
+        "type": "int4",
+        "id": "_id"
+      }
+    ],
+    "records": [
+      {
+        "_id": 1,
+        "forecast_date": "2026-10-20",
+        "forecast_lower_bound": "90",
+        "forecast_upper_bound": "160"
+      },
+      {
+        "_id": 2,
+        "forecast_date": "2026-10-21",
+        "forecast_lower_bound": "110",
+        "forecast_upper_bound": "180"
+      },
+      {
+        "_id": 3,
+        "forecast_date": "2026-10-22",
+        "forecast_lower_bound": "101",
+        "forecast_upper_bound": "160"
+      },
+      {
+        "_id": 4,
+        "forecast_date": "2026-10-23",
+        "forecast_lower_bound": "101",
+        "forecast_upper_bound": "150"
+      },
+      {
+        "_id": 5,
+        "forecast_date": "2026-10-24",
+        "forecast_lower_bound": "90",
+        "forecast_upper_bound": "140"
+      },
+      {
+        "_id": 6,
+        "forecast_date": "2026-10-25",
+        "forecast_lower_bound": "80",
+        "forecast_upper_bound": "130"
+      }
+    ],
+    "_links": {
+      "start": "/api/action/datastore_search?resource_id=d_c2c7fa70f297cdaee13afbe53a900eb9",
+      "next": "/api/action/datastore_search?resource_id=d_c2c7fa70f297cdaee13afbe53a900eb9&offset=100"
+    },
+    "total": 6
+  }
 }
