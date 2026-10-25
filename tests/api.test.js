@@ -62,9 +62,9 @@ test('PSI parser rejects API errors and unwrapped tables', () => {
   assert.throws(() => parsePsiPage(psiJson.result), /unexpected response/);
 });
 
-test('real data from 25 Oct 2026 12:00 gives Go for East', () => {
+test('real data from 25 Oct 2026 12:00 gives “Yes, let’s go!” for East', () => {
   const pm = parsePm25(pm25Json);
-  assert.equal(decide({ pm25: pm.readings.east }).verdict.label, 'Go');
+  assert.equal(decide({ pm25: pm.readings.east }).verdict.label, 'Yes, let’s go!');
 });
 
 test('fetchPm25 calls the real-time endpoint', async () => {

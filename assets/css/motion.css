@@ -1,5 +1,5 @@
-/* Motion. The ink wheels spin fast for Go, slowly for Easy ride,
-   and stop for Don't ride, stale data or no data. */
+/* Motion. The ink wheels spin fast for “Yes, let’s go!”, slowly for “Better Not”,
+   and stop for “Go back to sleep”, stale data or no data. */
 @keyframes spin {
   to { transform: rotate(360deg); }
 }
