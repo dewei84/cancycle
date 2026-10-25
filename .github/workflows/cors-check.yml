@@ -7,10 +7,14 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: PSI forecast datastore, GET with Pages origin
-        run: curl -sS -D - -o /dev/null -H "Origin: https://dewei84.github.io" "https://data.gov.sg/api/action/datastore_search?resource_id=d_c2c7fa70f297cdaee13afbe53a900eb9"
+        run: |
+          curl -sS -D - -o /dev/null -H "Origin: https://dewei84.github.io" "https://data.gov.sg/api/action/datastore_search?resource_id=d_c2c7fa70f297cdaee13afbe53a900eb9"
       - name: PSI forecast datastore, preflight
-        run: curl -sS -D - -o /dev/null -X OPTIONS -H "Origin: https://dewei84.github.io" -H "Access-Control-Request-Method: GET" "https://data.gov.sg/api/action/datastore_search?resource_id=d_c2c7fa70f297cdaee13afbe53a900eb9"
+        run: |
+          curl -sS -D - -o /dev/null -X OPTIONS -H "Origin: https://dewei84.github.io" -H "Access-Control-Request-Method: GET" "https://data.gov.sg/api/action/datastore_search?resource_id=d_c2c7fa70f297cdaee13afbe53a900eb9"
       - name: PM2.5 real-time API, GET with Pages origin
-        run: curl -sS -D - -o /dev/null -H "Origin: https://dewei84.github.io" "https://api-open.data.gov.sg/v2/real-time/api/pm25"
+        run: |
+          curl -sS -D - -o /dev/null -H "Origin: https://dewei84.github.io" "https://api-open.data.gov.sg/v2/real-time/api/pm25"
       - name: PSI forecast body
-        run: curl -sS "https://data.gov.sg/api/action/datastore_search?resource_id=d_c2c7fa70f297cdaee13afbe53a900eb9" | head -c 1500
+        run: |
+          curl -sS "https://data.gov.sg/api/action/datastore_search?resource_id=d_c2c7fa70f297cdaee13afbe53a900eb9" | head -c 1500
