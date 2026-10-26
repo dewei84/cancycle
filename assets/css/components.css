@@ -228,31 +228,6 @@ body[data-verdict='stop'] { --stroke: var(--stop-wash); }
   padding: 0 var(--space-1);
 }
 
-/* The chosen region: a ringed ink dot with its name above. */
-.rain__pin {
-  position: absolute;
-  width: 11px;
-  height: 11px;
-  margin: -5.5px 0 0 -5.5px;
-  box-sizing: border-box;
-  border: 1.8px solid var(--ink);
-  border-radius: 50%;
-  background: radial-gradient(circle, var(--ink) 0 2.2px, transparent 2.6px);
-}
-
-.rain__pin-label {
-  position: absolute;
-  bottom: calc(100% + 2px);
-  left: 50%;
-  transform: translateX(-50%);
-  font-family: var(--font-display);
-  font-size: 12px;
-  font-weight: 600;
-  white-space: nowrap;
-  color: var(--ink);
-  text-shadow: 0 0 2px var(--on-ink), 0 0 3px var(--on-ink), 0 0 4px var(--on-ink);
-}
-
 .rain__legend {
   display: flex;
   align-items: center;

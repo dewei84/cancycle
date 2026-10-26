@@ -16,11 +16,11 @@ export const REGIONS = [
 export const DEFAULT_REGION = 'east';
 
 // Bounds are { west, north, east, south } in degrees.
-// The Singapore outline in assets/images/map/singapore.svg (its geoViewBox).
-export const MAP_BOUNDS = { west: 103.618748, north: 1.470961, east: 104.084977, south: 1.179887 };
-// The part of the 70 km rain-areas image shown on the card: Singapore with some sea around it.
-// Its shape matches the map box in components.css (326 by 220).
-export const RAIN_VIEW = { west: 103.542, north: 1.535, east: 104.162, south: 1.1166 };
+// The Singapore map in assets/images/map/singapore.svg (its whole viewBox).
+export const MAP_BOUNDS = { west: 103.59283, north: 1.48803, east: 104.0999, south: 1.14825 };
+// The part of the 70 km rain-areas image shown on the card: the island with a thin
+// margin of sea on every side. Its shape matches the map box in components.css (326 by 220).
+export const RAIN_VIEW = { west: 103.5874, north: 1.4909, east: 104.108, south: 1.1397 };
 
 export const TIME_ZONE = 'Asia/Singapore';
 
