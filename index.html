@@ -41,8 +41,7 @@
       </div>
     </header>
 
-    <fieldset class="regions">
-      <legend class="regions__legend">Your region</legend>
+    <fieldset class="regions" aria-label="Your region">
       <div class="regions__options" id="region-options">
         <button class="region" type="button" data-region="north" aria-pressed="false">North</button>
         <button class="region" type="button" data-region="south" aria-pressed="false">South</button>
@@ -53,7 +52,6 @@
     </fieldset>
 
     <section class="verdict" aria-live="polite" aria-labelledby="verdict-label">
-      <p class="verdict__eyebrow">Right now</p>
       <div class="verdict__word">
         <span class="verdict__stroke" aria-hidden="true"></span>
         <h2 class="verdict__label" id="verdict-label">Checking…</h2>
@@ -84,15 +82,24 @@
       </section>
     </div>
 
-    <section class="card strip" aria-labelledby="strip-heading">
-      <p class="card__label" id="strip-heading">PM2.5 across Singapore (µg/m³)</p>
-      <dl class="strip__grid">
-        <div class="strip__item"><dt>North</dt><dd data-region-value="north">–</dd></div>
-        <div class="strip__item"><dt>South</dt><dd data-region-value="south">–</dd></div>
-        <div class="strip__item"><dt>East</dt><dd data-region-value="east">–</dd></div>
-        <div class="strip__item"><dt>West</dt><dd data-region-value="west">–</dd></div>
-        <div class="strip__item"><dt>Central</dt><dd data-region-value="central">–</dd></div>
-      </dl>
+    <section class="card rain" aria-labelledby="rain-heading">
+      <div class="rain__head">
+        <p class="card__label" id="rain-heading">Rain areas</p>
+        <p class="card__label" id="rain-time"></p>
+      </div>
+      <div class="rain__map" id="rain-map" role="img" aria-label="Map of Singapore">
+        <img class="rain__layer" id="rain-land" src="assets/images/map/singapore.svg" alt="">
+        <img class="rain__layer rain__layer--rain" id="rain-image" alt="" hidden>
+        <span class="rain__pin" id="rain-pin" aria-hidden="true">
+          <span class="rain__pin-label" id="rain-pin-label">East</span>
+        </span>
+      </div>
+      <p class="card__note" id="rain-note" hidden></p>
+      <div class="rain__legend">
+        <span>Light</span>
+        <span class="rain__scale" aria-hidden="true"></span>
+        <span>Heavy</span>
+      </div>
     </section>
 
     <footer class="app__footer">

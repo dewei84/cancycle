@@ -40,6 +40,20 @@ export const RAIN_FORECASTS = [
 
 const RAIN_KEYS = RAIN_FORECASTS.map((f) => f.toLowerCase());
 
+// Forecasts shown under one name: the day and night versions read the same to a rider.
+const DISPLAY_NAMES = {
+  'partly cloudy (day)': 'Partly Cloudy',
+  'partly cloudy (night)': 'Partly Cloudy',
+  'fair (day)': 'Fair',
+  'fair (night)': 'Fair',
+};
+
+// NEA's forecast wording as the app shows it.
+export function displayForecast(forecast) {
+  if (typeof forecast !== 'string') return forecast;
+  return DISPLAY_NAMES[forecast.trim().toLowerCase()] ?? forecast;
+}
+
 function isReading(value) {
   return typeof value === 'number' && Number.isFinite(value) && value >= 0;
 }
@@ -73,7 +87,7 @@ export function regionWeather(areas, region) {
   return {
     raining,
     // Show the rain that is coming when there is any; otherwise the usual weather.
-    forecast: mostCommon((raining ? rainy : mine).map((a) => a.forecast)),
+    forecast: mostCommon((raining ? rainy : mine).map((a) => displayForecast(a.forecast))),
     rainAreas: rainy.length,
     totalAreas: mine.length,
   };

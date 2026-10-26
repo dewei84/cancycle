@@ -29,7 +29,7 @@ Any other forecast (for example Fair, Partly Cloudy, Cloudy, Hazy) counts as Not
 - **Verdict** with NEA's advice, or a rain note when rain is forecast.
 - **PM2.5 card** for your region, with an ink-drawn face for the band: smiling (Band 1), frowning (Band 2) or masked (Bands 3 and 4).
 - **Weather card** for the next 2 hours: an animated sun or rain cloud, NEA's forecast wording and the forecast window.
-- **PM2.5 across Singapore** for all five regions.
+- **Rain areas**: NEA's latest 70 km rain-areas image over an ink map of Singapore, with your region marked and a light-to-heavy colour scale. It is for looking at only; the verdict uses the 2-hour forecast.
 - An **info button (ⓘ)** next to refresh opens a page with these verdict rules and the weather icons; close it to return home.
 
 Animations respect the device's reduced-motion setting. The guidance is for healthy adults and is not medical advice.
@@ -40,6 +40,8 @@ All data is fetched live in the browser each time the app opens, then every 15 m
 
 - [PM2.5](https://data.gov.sg/datasets/d_e1058d6974c877257e32048ab128ad83/view), NEA via data.gov.sg (real-time API)
 - [2-hour weather forecast](https://data.gov.sg/datasets/d_3f9e064e25005b0e42969944ccaf2e7a/view), NEA via data.gov.sg (real-time API)
+- [Weather radar images](https://data.gov.sg/datasets/d_418e9ac3414fd927b7405631e0a7bc82/view), 70 km rain areas, NEA via data.gov.sg (real-time API, Beta). The image link expires after about 20 minutes, so the app asks for a new one at each refresh.
+- Singapore map outline: from the MapSVG Singapore map (mapsvg.com), redrawn in ink in `assets/images/map/singapore.svg`.
 - Bands and advice: [1-hr PM2.5 bands](https://www.haze.gov.sg/resources/1-hr-pm2.5-readings)
 
 No API key is used. data.gov.sg says keyless access is meant for testing and recommends a key for production. If usage grows, add a small proxy that holds the key as a secret; never put the key in this repository.
@@ -52,9 +54,10 @@ info.html                verdict rules and weather icons page
 manifest.webmanifest     install to home screen
 sw.js                    service worker: caches the app shell, never the readings
 assets/css/              tokens, base, layout, components, motion
-assets/js/               ES modules: main, config, api, rules, store, ui
+assets/js/               ES modules: main, config, api, rules, map, store, ui
 assets/images/art/       ink wheel, streaks, paper grain, brush stroke (SVG)
 assets/images/icons/     app, UI, weather and PM2.5 face icons
+assets/images/map/       Singapore outline under the rain-areas image
 assets/fonts/            Fraunces (SIL Open Font License, see OFL.txt)
 tests/                   unit tests and real API responses as fixtures
 ```
