@@ -80,13 +80,6 @@
   gap: 6px;
 }
 
-.verdict__eyebrow {
-  font-size: 12px;
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
-  color: var(--ink-soft);
-}
-
 .verdict__word {
   position: relative;
   align-self: flex-start;
