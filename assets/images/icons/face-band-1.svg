@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 56 56" width="56" height="56">
+  <style>
+    @keyframes nod { 0%, 100% { transform: rotate(-4deg); } 50% { transform: rotate(4deg); } }
+    @keyframes blink { 0%, 92%, 100% { transform: scaleY(1); } 95% { transform: scaleY(0.1); } }
+    .face { transform-origin: 28px 28px; animation: nod 2.6s ease-in-out infinite; }
+    .eyes { transform-origin: 28px 24px; animation: blink 4s ease-in-out infinite; }
+    @media (prefers-reduced-motion: reduce) { .face, .eyes { animation: none; } }
+  </style>
+  <g class="face" fill="none" stroke="#2F6B3F" stroke-width="2.4" stroke-linecap="round">
+    <path d="M28 9 C41 9, 47 18, 47 28 C47 40, 38 47, 28 47 C16 47, 9 39, 9 28 C9 17, 17 10, 27 9" fill="#3F8A52" fill-opacity="0.14"/>
+    <g class="eyes"><path d="M21 23 L21 25"/><path d="M35 23 L35 25"/></g>
+    <path d="M18 32 C22 39, 34 39, 38 32"/>
+  </g>
+</svg>

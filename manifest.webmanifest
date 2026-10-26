@@ -1,7 +1,7 @@
 {
   "name": "Can I Cycle?",
   "short_name": "Can I Cycle",
-  "description": "A cycling verdict for Singapore from NEA's live PM2.5 readings and PSI forecast.",
+  "description": "A cycling verdict for Singapore from NEA's live PM2.5 readings and 2-hour weather forecast.",
   "start_url": "./",
   "scope": "./",
   "display": "standalone",

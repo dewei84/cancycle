@@ -1,24 +1,7 @@
 // Fetches and parses the two NEA feeds from data.gov.sg.
 // Parsers are exported separately so they can be tested against saved responses.
 
-import {
-  PM25_URL,
-  PSI_FORECAST_URL,
-  PSI_FORECAST_RESOURCE,
-  REQUEST_TIMEOUT_MS,
-  MAX_FORECAST_PAGES,
-  TIME_ZONE,
-} from './config.js';
-
-// Today's date in Singapore as YYYY-MM-DD.
-export function todayInSingapore(now = new Date()) {
-  return new Intl.DateTimeFormat('en-CA', {
-    timeZone: TIME_ZONE,
-    year: 'numeric',
-    month: '2-digit',
-    day: '2-digit',
-  }).format(now);
-}
+import { PM25_URL, FORECAST_URL, REGIONS, REQUEST_TIMEOUT_MS } from './config.js';
 
 function toNumber(value) {
   if (value === null || value === undefined || value === '') return null;
@@ -26,15 +9,17 @@ function toNumber(value) {
   return Number.isFinite(n) ? n : null;
 }
 
+function newest(items) {
+  return [...items].sort((a, b) => Date.parse(b.timestamp) - Date.parse(a.timestamp))[0];
+}
+
 // Real-time PM2.5 API -> { timestamp, updatedTimestamp, readings: { north, ... } }
 export function parsePm25(json) {
   if (!json || json.code !== 0) {
     throw new Error(json?.errorMsg || 'PM2.5 API returned an error');
   }
-  const items = json.data?.items ?? [];
-  const latest = items
-    .filter((it) => it?.readings?.pm25_one_hourly)
-    .sort((a, b) => Date.parse(b.timestamp) - Date.parse(a.timestamp))[0];
+  const items = (json.data?.items ?? []).filter((it) => it?.readings?.pm25_one_hourly);
+  const latest = newest(items);
   if (!latest) throw new Error('PM2.5 API returned no readings');
 
   const raw = latest.readings.pm25_one_hourly;
@@ -49,27 +34,47 @@ export function parsePm25(json) {
   };
 }
 
-// One page of the PSI forecast datastore -> { records, total }
-// The API wraps the table in { success, result: { records, total, ... } }.
-export function parsePsiPage(json) {
-  if (json?.success === false) {
-    throw new Error(json.error?.message || 'PSI forecast API returned an error');
+// The PM2.5 region whose centre is nearest to a point.
+export function nearestRegion(latitude, longitude) {
+  let best = null;
+  let bestDistance = Infinity;
+  for (const region of REGIONS) {
+    const distance = (region.latitude - latitude) ** 2 + (region.longitude - longitude) ** 2;
+    if (distance < bestDistance) {
+      best = region.id;
+      bestDistance = distance;
+    }
   }
-  const result = json?.result;
-  if (!result || !Array.isArray(result.records)) {
-    throw new Error('PSI forecast returned an unexpected response');
-  }
-  return { records: result.records, total: toNumber(result.total) ?? result.records.length };
+  return best;
 }
 
-// Picks the forecast for a date (YYYY-MM-DD) -> { date, lower, upper } or null.
-export function forecastForDate(records, date) {
-  const row = records.find((r) => r?.forecast_date === date);
-  if (!row) return null;
-  const lower = toNumber(row.forecast_lower_bound);
-  const upper = toNumber(row.forecast_upper_bound);
-  if (upper === null) return null;
-  return { date, lower, upper };
+// Real-time 2-hour forecast API ->
+// { timestamp, validPeriod: { start, end, text }, areas: [{ name, region, forecast }] }
+export function parseForecast(json) {
+  if (!json || json.code !== 0) {
+    throw new Error(json?.errorMsg || 'Weather forecast API returned an error');
+  }
+  const items = (json.data?.items ?? []).filter((it) => Array.isArray(it?.forecasts));
+  const latest = newest(items);
+  if (!latest) throw new Error('Weather forecast API returned no forecast');
+
+  const places = new Map();
+  for (const meta of json.data.area_metadata ?? []) {
+    const lat = toNumber(meta?.label_location?.latitude);
+    const lon = toNumber(meta?.label_location?.longitude);
+    if (meta?.name && lat !== null && lon !== null) places.set(meta.name, nearestRegion(lat, lon));
+  }
+
+  const areas = latest.forecasts
+    .filter((f) => places.has(f?.area) && typeof f.forecast === 'string')
+    .map((f) => ({ name: f.area, region: places.get(f.area), forecast: f.forecast }));
+  if (areas.length === 0) throw new Error('Weather forecast API returned no areas');
+
+  return {
+    timestamp: latest.timestamp,
+    validPeriod: latest.valid_period ?? null,
+    areas,
+  };
 }
 
 async function getJson(url, fetchImpl) {
@@ -88,18 +93,6 @@ export async function fetchPm25(fetchImpl = fetch) {
   return parsePm25(await getJson(PM25_URL, fetchImpl));
 }
 
-// Reads every page of the forecast table (it is small), then picks today's row.
-export async function fetchPsiForecast(date = todayInSingapore(), fetchImpl = fetch) {
-  const records = [];
-  let total = Infinity;
-  for (let page = 0; page < MAX_FORECAST_PAGES && records.length < total; page += 1) {
-    const url = new URL(PSI_FORECAST_URL);
-    url.searchParams.set('resource_id', PSI_FORECAST_RESOURCE);
-    if (records.length > 0) url.searchParams.set('offset', String(records.length));
-    const parsed = parsePsiPage(await getJson(url.toString(), fetchImpl));
-    records.push(...parsed.records);
-    total = parsed.total;
-    if (parsed.records.length === 0) break;
-  }
-  return forecastForDate(records, date);
+export async function fetchForecast(fetchImpl = fetch) {
+  return parseForecast(await getJson(FORECAST_URL, fetchImpl));
 }
