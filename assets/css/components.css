@@ -41,13 +41,6 @@
   min-width: 0;
 }
 
-.regions__legend {
-  padding: 0;
-  margin-bottom: var(--space-2);
-  font-size: 13px;
-  color: var(--ink-soft);
-}
-
 .regions__options {
   display: grid;
   grid-template-columns: repeat(5, minmax(0, 1fr));
