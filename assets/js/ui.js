@@ -2,7 +2,7 @@
 
 import { REGIONS, TIME_ZONE, MAP_BOUNDS, RAIN_VIEW, RADAR_STALE_AFTER_MS } from './config.js';
 import { pm25Band, displayForecast, isStale } from './rules.js';
-import { placeBox, placePoint } from './map.js';
+import { placeBox } from './map.js';
 
 const $ = (id) => document.getElementById(id);
 
@@ -154,14 +154,7 @@ $('rain-image').addEventListener('error', () => {
   $('rain-note').hidden = false;
 });
 
-function renderRainAreas(radar, region, error, now) {
-  const label = regionLabel(region);
-  const place = REGIONS.find((r) => r.id === region);
-  const pin = placePoint(place.latitude, place.longitude, RAIN_VIEW);
-  $('rain-pin').style.left = `${pin.left}%`;
-  $('rain-pin').style.top = `${pin.top}%`;
-  $('rain-pin-label').textContent = label;
-
+function renderRainAreas(radar, error, now) {
   const image = $('rain-image');
   const broken = Boolean(radar) && failedImage === radar.imageUrl;
   if (radar) {
@@ -178,12 +171,11 @@ function renderRainAreas(radar, region, error, now) {
   $('rain-note').textContent = note;
   $('rain-note').hidden = !note;
 
-  const time = radar ? ` at ${formatClock(radar.timestamp)}` : '';
   $('rain-map').setAttribute(
     'aria-label',
     radar
-      ? `Map of NEA rain areas around Singapore${time}, with ${label} marked.`
-      : `Map of Singapore with ${label} marked. No rain-areas image right now.`,
+      ? `Map of NEA rain areas around Singapore at ${formatClock(radar.timestamp)}.`
+      : 'Map of Singapore. No rain-areas image right now.',
   );
 }
 
@@ -195,7 +187,7 @@ export function render(state) {
   renderRegion(region);
   renderPm(pm, region, todayLabel);
   renderWeather(weather, forecast);
-  renderRainAreas(radar, region, errors.radar, now);
+  renderRainAreas(radar, errors.radar, now);
 
   const verdict = decision.verdict;
   document.body.dataset.verdict = verdict ? verdict.id : 'unknown';

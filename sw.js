@@ -2,7 +2,7 @@
 // It caches only the app's own files. Air-quality readings and forecasts come from
 // data.gov.sg and are never intercepted or cached here, so they are always live.
 
-const CACHE = 'cancycle-shell-v3';
+const CACHE = 'cancycle-shell-v4';
 const SHELL = [
   './',
   'index.html',
