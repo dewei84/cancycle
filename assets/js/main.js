@@ -65,6 +65,9 @@ function start() {
   setInterval(load, REFRESH_MS);
   // Re-check staleness between refreshes.
   setInterval(draw, 60 * 1000);
+  // Text fitting depends on the web font and the screen width.
+  document.fonts?.ready.then(draw);
+  window.addEventListener('resize', draw);
   // Phones pause timers in the background; refresh on return if due.
   document.addEventListener('visibilitychange', () => {
     if (document.visibilityState === 'visible' && Date.now() - lastLoadedAt > REFRESH_MS) {

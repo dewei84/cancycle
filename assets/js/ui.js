@@ -1,7 +1,7 @@
 // Renders app state into the page. All DOM writes live here.
 
 import { REGIONS, TIME_ZONE } from './config.js';
-import { pm25Band } from './rules.js';
+import { pm25Band, displayForecast } from './rules.js';
 
 const $ = (id) => document.getElementById(id);
 
@@ -93,14 +93,26 @@ function renderPm(pm, region, todayLabel) {
   }
 }
 
+// Keeps text at its CSS size, stepping down only until its longest word fits.
+function fitText(el, minPx = 20) {
+  el.style.fontSize = '';
+  let size = parseFloat(getComputedStyle(el).fontSize);
+  while (el.scrollWidth > el.clientWidth && size > minPx) {
+    size -= 2;
+    el.style.fontSize = `${size}px`;
+  }
+}
+
 function renderWeather(weather, forecast) {
   if (!weather) {
     $('wx-forecast').textContent = '–';
+    $('wx-forecast').style.fontSize = '';
     $('wx-note').textContent = forecast ? 'No current forecast for this region' : 'No forecast';
     setIcon($('wx-icon'), null);
     return;
   }
-  $('wx-forecast').textContent = weather.forecast;
+  $('wx-forecast').textContent = displayForecast(weather.forecast);
+  fitText($('wx-forecast'));
   setIcon(
     $('wx-icon'),
     weather.raining
@@ -135,16 +147,15 @@ export function render(state) {
   } else {
     $('verdict-advice').textContent = `NEA advice: ${decision.advice}`;
   }
+  // The reason line only appears when something is missing.
+  let reason = '';
   if (!verdict) {
-    $('verdict-reason').textContent =
-      "We couldn't get a current PM2.5 reading, so there's no verdict right now.";
-  } else if (weather) {
-    $('verdict-reason').textContent =
-      `Based on the latest 1-hr PM2.5 reading and the 2-hr forecast for ${regionLabel(region)}.`;
-  } else {
-    $('verdict-reason').textContent =
-      `Based on the latest 1-hr PM2.5 reading for ${regionLabel(region)} only; the rain forecast is missing.`;
+    reason = "We couldn't get a current PM2.5 reading, so there's no verdict right now.";
+  } else if (!weather) {
+    reason = 'The rain forecast is missing, so this verdict uses PM2.5 only.';
   }
+  $('verdict-reason').textContent = reason;
+  $('verdict-reason').hidden = !reason;
 
   const updated = pm?.timestamp ? `updated ${formatTime(pm.timestamp)}` : 'no current reading';
   $('updated').textContent = `Singapore · ${updated}`;

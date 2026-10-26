@@ -9,6 +9,7 @@ import {
   regionWeather,
   forecastExpired,
   RAIN_FORECASTS,
+  displayForecast,
 } from '../assets/js/rules.js';
 
 test('PM2.5 band edges follow NEA (55/56, 150/151, 250/251)', () => {
@@ -99,7 +100,7 @@ test('a dry region shows its most common forecast', () => {
   ];
   const w = regionWeather(areas, 'east');
   assert.equal(w.raining, false);
-  assert.equal(w.forecast, 'Partly Cloudy (Night)');
+  assert.equal(w.forecast, 'Partly Cloudy');
   assert.equal(w.rainAreas, 0);
 });
 
@@ -109,6 +110,24 @@ test('mixed rain shows the most common rain, heavier rain on a tie', () => {
     { name: 'B', region: 'east', forecast: 'Thundery Showers' },
   ];
   assert.equal(regionWeather(areas, 'east').forecast, 'Thundery Showers');
+});
+
+test('day and night versions of Partly Cloudy and Fair show as one name', () => {
+  assert.equal(displayForecast('Partly Cloudy (Day)'), 'Partly Cloudy');
+  assert.equal(displayForecast('Partly Cloudy (Night)'), 'Partly Cloudy');
+  assert.equal(displayForecast('Fair (Day)'), 'Fair');
+  assert.equal(displayForecast('Fair (Night)'), 'Fair');
+  assert.equal(displayForecast('Cloudy'), 'Cloudy');
+  assert.equal(displayForecast('Thundery Showers'), 'Thundery Showers');
+});
+
+test('merged names are counted together when picking the forecast', () => {
+  const areas = [
+    { name: 'A', region: 'east', forecast: 'Partly Cloudy (Day)' },
+    { name: 'B', region: 'east', forecast: 'Partly Cloudy (Night)' },
+    { name: 'C', region: 'east', forecast: 'Cloudy' },
+  ];
+  assert.equal(regionWeather(areas, 'east').forecast, 'Partly Cloudy');
 });
 
 test('a region with no forecast areas has no weather', () => {

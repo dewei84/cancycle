@@ -182,10 +182,9 @@ body[data-verdict='stop'] { --stroke: var(--stop-wash); }
   line-height: 1.15;
 }
 
+/* Same size as the PM2.5 reading; ui.js shrinks it only when a word is too wide. */
 .card__value--text {
-  font-size: 24px;
-  line-height: 1.1;
-  overflow-wrap: anywhere;
+  overflow-wrap: normal;
 }
 
 .card__unit {
