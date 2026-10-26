@@ -1,0 +1,99 @@
+<!doctype html>
+<html lang="en-SG">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>How the verdict works · Can I Cycle?</title>
+  <meta name="description" content="How Can I Cycle? decides its verdict from NEA's PM2.5 readings and 2-hour weather forecast.">
+  <meta name="theme-color" content="#ECEBE6">
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="icon" href="assets/images/icons/icon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="assets/images/icons/apple-touch-icon.png">
+  <link rel="preload" href="assets/fonts/fraunces-latin-opsz.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="stylesheet" href="assets/css/tokens.css">
+  <link rel="stylesheet" href="assets/css/base.css">
+  <link rel="stylesheet" href="assets/css/layout.css">
+  <link rel="stylesheet" href="assets/css/components.css">
+  <link rel="stylesheet" href="assets/css/motion.css">
+</head>
+<body data-verdict="info">
+  <div class="art" aria-hidden="true">
+    <img class="art__paper" src="assets/images/art/paper-grain.svg" alt="">
+  </div>
+
+  <main class="app">
+    <header class="info__header">
+      <h1 class="info__title">How the verdict is decided</h1>
+      <a class="icon-button" href="./" aria-label="Close and go back">
+        <img src="assets/images/icons/close.svg" alt="" width="20" height="20">
+      </a>
+    </header>
+
+    <p class="info__intro">Two inputs for your region: the latest 1-hr PM2.5 reading and the 2-hour weather forecast. Rain always wins.</p>
+
+    <section class="card" aria-label="Verdict rules">
+      <table class="rules">
+        <thead>
+          <tr><th scope="col">2-hr forecast</th><th scope="col">PM2.5</th><th scope="col">Verdict</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>Not raining</td><td>Band 1</td><td class="rules__verdict rules__verdict--go">Yes, let’s go!</td></tr>
+          <tr><td>Not raining</td><td>Band 2</td><td class="rules__verdict rules__verdict--easy">Better not</td></tr>
+          <tr><td>Not raining</td><td>Band 3 or 4</td><td class="rules__verdict rules__verdict--stop">Go back to sleep</td></tr>
+          <tr><td class="rules__rain">Raining</td><td>Any band</td><td class="rules__verdict rules__verdict--stop">Go back to sleep</td></tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section class="info__section">
+      <h2 class="info__heading">When is it “Raining”?</h2>
+      <p class="info__text" id="rain-list">When any forecast area in your region shows one of: Light Rain, Moderate Rain, Heavy Rain, Passing Showers, Light Showers, Showers, Heavy Showers, Thundery Showers, Heavy Thundery Showers, or Heavy Thundery Showers with Gusty Winds. Anything else (Fair, Cloudy, Hazy…) is Not raining.</p>
+    </section>
+
+    <section class="info__section">
+      <h2 class="info__heading">Weather icons</h2>
+      <div class="icon-grid">
+        <div class="card icon-tile">
+          <img src="assets/images/icons/weather-sun.svg" alt="Sun" width="72" height="72">
+          <p class="icon-tile__name">Not raining</p>
+        </div>
+        <div class="card card--alt icon-tile">
+          <img src="assets/images/icons/weather-rain.svg" alt="Rain cloud" width="72" height="72">
+          <p class="icon-tile__name">Raining</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="info__section">
+      <h2 class="info__heading">PM2.5 faces</h2>
+      <div class="icon-grid icon-grid--faces">
+        <div class="card icon-tile">
+          <img src="assets/images/icons/face-band-1.svg" alt="Smiling face" width="72" height="72">
+          <p class="icon-tile__name">Band 1</p>
+          <p class="card__note">0–55</p>
+        </div>
+        <div class="card card--alt icon-tile">
+          <img src="assets/images/icons/face-band-2.svg" alt="Frowning face" width="72" height="72">
+          <p class="icon-tile__name">Band 2</p>
+          <p class="card__note">56–150</p>
+        </div>
+        <div class="card icon-tile">
+          <img src="assets/images/icons/face-band-3.svg" alt="Face with a mask" width="72" height="72">
+          <p class="icon-tile__name">Band 3 or 4</p>
+          <p class="card__note">151 and above</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="info__section">
+      <h2 class="info__heading">Your region’s forecast areas</h2>
+      <p class="info__text">Each of NEA’s 2-hour forecast areas belongs to its nearest PM2.5 region. For example, East covers Bedok, Changi, Hougang, Pasir Ris, Paya Lebar, Pulau Tekong, Pulau Ubin, Punggol, Sengkang and Tampines.</p>
+    </section>
+
+    <footer class="app__footer">
+      Data: NEA via <a href="https://data.gov.sg">data.gov.sg</a>. PM2.5 bands from <a href="https://www.haze.gov.sg/resources/1-hr-pm2.5-readings">haze.gov.sg</a>.
+      Guidance for healthy adults, based on NEA advisories; not medical advice.
+    </footer>
+  </main>
+</body>
+</html>

@@ -1,16 +1,16 @@
 // Starts the app: loads live data, refreshes it, and wires up the controls.
 
 import { REFRESH_MS, STALE_AFTER_MS } from './config.js';
-import { fetchPm25, fetchPsiForecast } from './api.js';
-import { decide, isStale } from './rules.js';
+import { fetchPm25, fetchForecast } from './api.js';
+import { decide, isStale, regionWeather, forecastExpired } from './rules.js';
 import { loadRegion, saveRegion } from './store.js';
 import * as ui from './ui.js';
 
 const state = {
   region: loadRegion(),
   pm: null,
-  psi: null,
-  errors: { pm: null, psi: null },
+  forecast: null,
+  errors: { pm: null, forecast: null },
 };
 
 let loading = false;
@@ -19,10 +19,16 @@ let lastLoadedAt = 0;
 function draw() {
   const now = Date.now();
   const pm25 = state.pm?.readings?.[state.region];
+  // A forecast whose 2-hour window has passed says nothing about rain now.
+  const forecastExpiredNow = state.forecast ? forecastExpired(state.forecast.validPeriod, now) : false;
+  const weather =
+    state.forecast && !forecastExpiredNow ? regionWeather(state.forecast.areas, state.region) : null;
   ui.render({
     ...state,
     now,
-    decision: decide({ pm25 }),
+    weather,
+    forecastExpired: forecastExpiredNow,
+    decision: decide({ pm25, raining: weather ? weather.raining : null }),
     stale: state.pm ? isStale(state.pm.timestamp, now, STALE_AFTER_MS) : false,
   });
 }
@@ -32,13 +38,13 @@ async function load() {
   loading = true;
   ui.setLoading(true);
 
-  const [pm, psi] = await Promise.allSettled([fetchPm25(), fetchPsiForecast()]);
+  const [pm, forecast] = await Promise.allSettled([fetchPm25(), fetchForecast()]);
 
   // Keep the last good reading if a refresh fails, and say so.
   if (pm.status === 'fulfilled') state.pm = pm.value;
   state.errors.pm = pm.status === 'rejected' ? pm.reason : null;
-  if (psi.status === 'fulfilled') state.psi = psi.value;
-  state.errors.psi = psi.status === 'rejected' ? psi.reason : null;
+  if (forecast.status === 'fulfilled') state.forecast = forecast.value;
+  state.errors.forecast = forecast.status === 'rejected' ? forecast.reason : null;
 
   lastLoadedAt = Date.now();
   loading = false;

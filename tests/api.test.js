@@ -3,19 +3,18 @@ import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import {
   parsePm25,
-  parsePsiPage,
-  forecastForDate,
+  parseForecast,
+  nearestRegion,
   fetchPm25,
-  fetchPsiForecast,
-  todayInSingapore,
+  fetchForecast,
 } from '../assets/js/api.js';
-import { decide } from '../assets/js/rules.js';
+import { decide, regionWeather } from '../assets/js/rules.js';
 
 const fixture = (name) =>
   JSON.parse(readFileSync(new URL(`./fixtures/${name}`, import.meta.url), 'utf8'));
 
 const pm25Json = fixture('pm25-2026-10-25T1200.json');
-const psiJson = fixture('psi-forecast-2026-10-25.json');
+const forecastJson = fixture('two-hr-forecast-2026-10-26T1930.json');
 
 function fakeFetch(responses) {
   const calls = [];
@@ -47,24 +46,54 @@ test('PM2.5 parser rejects error responses and empty data', () => {
   assert.throws(() => parsePm25({ code: 0, data: { items: [] } }), /no readings/);
 });
 
-test("picks today's forecast and converts its bounds to numbers", () => {
-  const { records } = parsePsiPage(psiJson);
-  assert.deepEqual(forecastForDate(records, '2026-10-25'), {
-    date: '2026-10-25',
-    lower: 80,
-    upper: 130,
-  });
-  assert.equal(forecastForDate(records, '2026-10-26'), null);
+test('parses the real 2-hour forecast response', () => {
+  const f = parseForecast(forecastJson);
+  assert.equal(f.timestamp, '2026-10-26T19:30:00+08:00');
+  assert.equal(f.validPeriod.text, '7.30 pm to 9.30 pm');
+  assert.equal(f.areas.length, 47);
+  assert.ok(f.areas.every((a) => a.forecast === 'Cloudy'));
 });
 
-test('PSI parser rejects API errors and unwrapped tables', () => {
-  assert.throws(() => parsePsiPage({ success: false, error: { message: 'boom' } }), /boom/);
-  assert.throws(() => parsePsiPage(psiJson.result), /unexpected response/);
+test('forecast areas map to their nearest PM2.5 region', () => {
+  const regionOf = Object.fromEntries(parseForecast(forecastJson).areas.map((a) => [a.name, a.region]));
+  const east = Object.keys(regionOf).filter((n) => regionOf[n] === 'east').sort();
+  assert.deepEqual(east, [
+    'Bedok', 'Changi', 'Hougang', 'Pasir Ris', 'Paya Lebar',
+    'Pulau Tekong', 'Pulau Ubin', 'Punggol', 'Sengkang', 'Tampines',
+  ]);
+  const counts = {};
+  for (const r of Object.values(regionOf)) counts[r] = (counts[r] ?? 0) + 1;
+  assert.deepEqual(counts, { central: 7, east: 10, west: 12, south: 12, north: 6 });
+  assert.equal(nearestRegion(1.432, 103.786528), 'north'); // Woodlands
 });
 
-test('real data from 25 Oct 2026 12:00 gives “Yes, let’s go!” for East', () => {
+test('forecast parser picks the newest item and rejects errors', () => {
+  const older = structuredClone(forecastJson.data.items[0]);
+  older.timestamp = '2026-10-26T17:30:00+08:00';
+  older.forecasts = older.forecasts.map((f) => ({ ...f, forecast: 'Heavy Rain' }));
+  const json = structuredClone(forecastJson);
+  json.data.items = [older, ...json.data.items];
+  assert.equal(parseForecast(json).areas[0].forecast, 'Cloudy');
+  assert.throws(() => parseForecast({ code: 1, errorMsg: 'boom' }), /boom/);
+  assert.throws(() => parseForecast({ code: 0, data: { items: [] } }), /no forecast/);
+});
+
+test('real data: 25 Oct PM2.5 with the cloudy 26 Oct forecast gives "Yes, let’s go!" for East', () => {
   const pm = parsePm25(pm25Json);
-  assert.equal(decide({ pm25: pm.readings.east }).verdict.label, 'Yes, let’s go!');
+  const weather = regionWeather(parseForecast(forecastJson).areas, 'east');
+  assert.equal(weather.raining, false);
+  assert.equal(decide({ pm25: pm.readings.east, raining: weather.raining }).verdict.label, 'Yes, let’s go!');
+});
+
+test('real data with showers in one East area gives "Go back to sleep"', () => {
+  const json = structuredClone(forecastJson);
+  const changi = json.data.items[0].forecasts.find((f) => f.area === 'Changi');
+  changi.forecast = 'Passing Showers';
+  const weather = regionWeather(parseForecast(json).areas, 'east');
+  assert.equal(weather.raining, true);
+  assert.equal(decide({ pm25: 34, raining: weather.raining }).verdict.label, 'Go back to sleep');
+  // West has no rain, so it is unaffected.
+  assert.equal(regionWeather(parseForecast(json).areas, 'west').raining, false);
 });
 
 test('fetchPm25 calls the real-time endpoint', async () => {
@@ -74,30 +103,15 @@ test('fetchPm25 calls the real-time endpoint', async () => {
   assert.equal(calls[0], 'https://api-open.data.gov.sg/v2/real-time/api/pm25');
 });
 
-test('fetchPsiForecast reads one page when it holds every record', async () => {
-  const { impl, calls } = fakeFetch([psiJson]);
-  const psi = await fetchPsiForecast('2026-10-25', impl);
-  assert.equal(psi.upper, 130);
-  assert.equal(calls.length, 1);
-  assert.match(calls[0], /resource_id=d_c2c7fa70f297cdaee13afbe53a900eb9/);
-});
-
-test('fetchPsiForecast follows offsets when the table spans pages', async () => {
-  const all = psiJson.result.records;
-  const first = { success: true, result: { records: all.slice(0, 3), total: 6 } };
-  const second = { success: true, result: { records: all.slice(3), total: 6 } };
-  const { impl, calls } = fakeFetch([first, second]);
-  const psi = await fetchPsiForecast('2026-10-25', impl);
-  assert.equal(psi.upper, 130);
-  assert.match(calls[1], /offset=3/);
+test('fetchForecast calls the 2-hour forecast endpoint', async () => {
+  const { impl, calls } = fakeFetch([forecastJson]);
+  const f = await fetchForecast(impl);
+  assert.equal(f.areas.length, 47);
+  assert.equal(calls[0], 'https://api-open.data.gov.sg/v2/real-time/api/two-hr-forecast');
 });
 
 test('a failed request is reported as an error', async () => {
   const impl = async () => ({ ok: false, status: 503, json: async () => ({}) });
   await assert.rejects(fetchPm25(impl), /503/);
-});
-
-test("today's date uses Singapore time", () => {
-  // 17:30 UTC on 24 Oct is 01:30 on 25 Oct in Singapore.
-  assert.equal(todayInSingapore(new Date('2026-10-24T17:30:00Z')), '2026-10-25');
+  await assert.rejects(fetchForecast(impl), /503/);
 });

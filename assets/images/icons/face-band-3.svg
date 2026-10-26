@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 56 56" width="56" height="56">
+  <style>
+    @keyframes breathe { 50% { transform: scale(1.07); } }
+    @keyframes blink { 0%, 92%, 100% { transform: scaleY(1); } 95% { transform: scaleY(0.1); } }
+    .mask { transform-origin: 28px 33px; animation: breathe 2.4s ease-in-out infinite; }
+    .eyes { transform-origin: 28px 21px; animation: blink 4s ease-in-out infinite; }
+    @media (prefers-reduced-motion: reduce) { .mask, .eyes { animation: none; } }
+  </style>
+  <g fill="none" stroke="#A3261B" stroke-width="2.4" stroke-linecap="round">
+    <path d="M28 9 C41 9, 47 18, 47 28 C47 40, 38 47, 28 47 C16 47, 9 39, 9 28 C9 17, 17 10, 27 9" fill="#C2402F" fill-opacity="0.12"/>
+    <g class="eyes"><path d="M20 21 C21 20, 23 20, 24 21"/><path d="M32 21 C33 20, 35 20, 36 21"/></g>
+    <path d="M17 30 L10 27"/><path d="M39 30 L46 27"/>
+    <g class="mask">
+      <path d="M17 29 C22 27, 34 27, 39 29 L38 37 C34 41, 22 41, 18 37 Z" fill="#F7F6F1"/>
+      <path d="M21 32.5 L35 32.5" stroke-width="1.4"/><path d="M22 36 L34 36" stroke-width="1.4"/>
+    </g>
+  </g>
+</svg>

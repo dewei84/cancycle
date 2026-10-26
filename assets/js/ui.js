@@ -1,7 +1,7 @@
 // Renders app state into the page. All DOM writes live here.
 
 import { REGIONS, TIME_ZONE } from './config.js';
-import { pm25Band, psiBand } from './rules.js';
+import { pm25Band } from './rules.js';
 
 const $ = (id) => document.getElementById(id);
 
@@ -52,6 +52,22 @@ export function renderRegion(region) {
     button.setAttribute('aria-pressed', String(button.dataset.region === region));
   }
   $('pm-region').textContent = regionLabel(region);
+  $('wx-region').textContent = regionLabel(region);
+}
+
+const FACES = {
+  1: { src: 'face-band-1.svg', alt: 'Smiling face' },
+  2: { src: 'face-band-2.svg', alt: 'Frowning face' },
+  3: { src: 'face-band-3.svg', alt: 'Face with a mask' },
+};
+
+// Sets an icon image, or hides it when there is nothing to show.
+function setIcon(img, icon) {
+  img.hidden = !icon;
+  if (!icon) return;
+  const src = `assets/images/icons/${icon.src}`;
+  if (img.getAttribute('src') !== src) img.setAttribute('src', src);
+  img.alt = icon.alt;
 }
 
 function renderPm(pm, region, todayLabel) {
@@ -65,6 +81,7 @@ function renderPm(pm, region, todayLabel) {
   $('pm-value').textContent = band ? String(value) : '–';
   $('pm-band').textContent = band ? `Band ${band.band} · ${band.name}` : 'No reading';
   $('pm-band').dataset.level = band ? String(band.band) : '';
+  setIcon($('pm-face'), band ? FACES[Math.min(band.band, 3)] : null);
 
   if (pm?.timestamp) {
     const day = formatDay(pm.timestamp);
@@ -76,44 +93,66 @@ function renderPm(pm, region, todayLabel) {
   }
 }
 
-function renderPsi(psi) {
-  if (!psi) {
-    $('psi-range').textContent = '–';
-    $('psi-band').textContent = 'Not published yet';
-    $('psi-band').dataset.level = '';
+function renderWeather(weather, forecast) {
+  if (!weather) {
+    $('wx-forecast').textContent = '–';
+    $('wx-note').textContent = forecast ? 'No current forecast for this region' : 'No forecast';
+    setIcon($('wx-icon'), null);
     return;
   }
-  const band = psiBand(psi.upper);
-  $('psi-range').textContent = psi.lower === null ? `≤${psi.upper}` : `${psi.lower}–${psi.upper}`;
-  $('psi-band').textContent = `${band.name} (upper bound)`;
-  $('psi-band').dataset.level = band.verdict;
+  $('wx-forecast').textContent = weather.forecast;
+  setIcon(
+    $('wx-icon'),
+    weather.raining
+      ? { src: 'weather-rain.svg', alt: 'Rain cloud' }
+      : { src: 'weather-sun.svg', alt: 'Sun' },
+  );
+  const areas = weather.raining
+    ? `rain in ${weather.rainAreas} of ${weather.totalAreas} areas`
+    : `no rain in ${weather.totalAreas} areas`;
+  const period = forecast?.validPeriod?.text;
+  $('wx-note').textContent = period ? `${period} · ${areas}` : areas;
 }
 
-// state: { region, pm, psi, decision, stale, errors: { pm, psi }, now }
+// state: { region, pm, forecast, weather, forecastExpired, decision, stale, errors: { pm, forecast }, now }
 export function render(state) {
-  const { region, pm, psi, decision, stale, errors, now } = state;
+  const { region, pm, forecast, weather, decision, stale, errors, now } = state;
   const todayLabel = dayFormat.format(now);
 
   renderRegion(region);
   renderPm(pm, region, todayLabel);
-  renderPsi(psi);
+  renderWeather(weather, forecast);
 
   const verdict = decision.verdict;
   document.body.dataset.verdict = verdict ? verdict.id : 'unknown';
   document.body.toggleAttribute('data-stale', Boolean(stale));
 
   $('verdict-label').textContent = verdict ? verdict.label : 'No data';
-  $('verdict-advice').textContent = verdict ? `NEA advice: ${decision.advice}` : '';
-  $('verdict-reason').textContent = verdict
-    ? `Based on the latest 1-hr PM2.5 reading for ${regionLabel(region)}.`
-    : "We couldn't get a current PM2.5 reading, so there's no verdict right now.";
+  if (!verdict) {
+    $('verdict-advice').textContent = '';
+  } else if (decision.rain) {
+    $('verdict-advice').textContent = `Rain is forecast for ${regionLabel(region)} in the next 2 hours.`;
+  } else {
+    $('verdict-advice').textContent = `NEA advice: ${decision.advice}`;
+  }
+  if (!verdict) {
+    $('verdict-reason').textContent =
+      "We couldn't get a current PM2.5 reading, so there's no verdict right now.";
+  } else if (weather) {
+    $('verdict-reason').textContent =
+      `Based on the latest 1-hr PM2.5 reading and the 2-hr forecast for ${regionLabel(region)}.`;
+  } else {
+    $('verdict-reason').textContent =
+      `Based on the latest 1-hr PM2.5 reading for ${regionLabel(region)} only; the rain forecast is missing.`;
+  }
 
   const updated = pm?.timestamp ? `updated ${formatTime(pm.timestamp)}` : 'no current reading';
   $('updated').textContent = `Singapore · ${updated}`;
 
   const notices = [];
   if (errors.pm) notices.push("PM2.5 readings couldn't be loaded.");
-  if (errors.psi) notices.push("The PSI forecast couldn't be loaded.");
+  if (errors.forecast) notices.push("The 2-hour weather forecast couldn't be loaded.");
+  else if (state.forecastExpired) notices.push('The 2-hour weather forecast is out of date.');
   if (stale && pm) notices.push('The latest PM2.5 reading is over 2 hours old, so it may be out of date.');
   $('notice').hidden = notices.length === 0;
   $('notice').textContent = notices.join(' ');

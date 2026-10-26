@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <title>Can I Cycle?</title>
-  <meta name="description" content="Should you ride today? A cycling verdict for Singapore from NEA's live PM2.5 readings and PSI forecast.">
+  <meta name="description" content="Should you ride today? A cycling verdict for Singapore from NEA's live PM2.5 readings and 2-hour weather forecast.">
   <meta name="theme-color" content="#ECEBE6">
   <link rel="manifest" href="manifest.webmanifest">
   <link rel="icon" href="assets/images/icons/icon.svg" type="image/svg+xml">
@@ -31,9 +31,14 @@
         <h1 class="app__title">Can I Cycle?</h1>
         <p class="app__updated" id="updated">Singapore · loading the latest readings…</p>
       </div>
-      <button class="icon-button" id="refresh" type="button" aria-label="Refresh data">
-        <img src="assets/images/icons/refresh.svg" alt="" width="20" height="20">
-      </button>
+      <div class="app__actions">
+        <a class="icon-button" href="info.html" aria-label="How the verdict works">
+          <img src="assets/images/icons/info.svg" alt="" width="20" height="20">
+        </a>
+        <button class="icon-button" id="refresh" type="button" aria-label="Refresh data">
+          <img src="assets/images/icons/refresh.svg" alt="" width="20" height="20">
+        </button>
+      </div>
     </header>
 
     <fieldset class="regions">
@@ -61,16 +66,21 @@
 
     <div class="cards">
       <section class="card" aria-labelledby="pm-heading">
-        <p class="card__label" id="pm-heading">PM2.5 now · <span id="pm-region">East</span></p>
+        <div class="card__head">
+          <p class="card__label" id="pm-heading">PM2.5 now · <span id="pm-region">East</span></p>
+          <img class="card__icon" id="pm-face" src="assets/images/icons/face-band-1.svg" alt="" width="56" height="56" hidden>
+        </div>
         <p class="card__value"><span id="pm-value">–</span><span class="card__unit"> µg/m³</span></p>
         <p class="card__band" id="pm-band"></p>
         <p class="card__note" id="pm-time"></p>
       </section>
-      <section class="card card--alt" aria-labelledby="psi-heading">
-        <p class="card__label" id="psi-heading">PSI forecast · today</p>
-        <p class="card__value" id="psi-range">–</p>
-        <p class="card__band" id="psi-band"></p>
-        <p class="card__note">24-hr PSI, island-wide. For info; not used in the verdict.</p>
+      <section class="card card--alt" aria-labelledby="wx-heading">
+        <div class="card__head">
+          <p class="card__label" id="wx-heading">Next 2 hrs · <span id="wx-region">East</span></p>
+          <img class="card__icon" id="wx-icon" src="assets/images/icons/weather-sun.svg" alt="" width="56" height="56" hidden>
+        </div>
+        <p class="card__value card__value--text" id="wx-forecast">–</p>
+        <p class="card__note" id="wx-note"></p>
       </section>
     </div>
 

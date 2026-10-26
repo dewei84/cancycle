@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 56 56" width="56" height="56">
+  <style>
+    @keyframes bob { 50% { transform: translateY(-2px); } }
+    @keyframes drop {
+      0% { transform: translateY(-4px); opacity: 0; }
+      20%, 80% { opacity: 1; }
+      100% { transform: translateY(14px); opacity: 0; }
+    }
+    .cloud { animation: bob 3s ease-in-out infinite; }
+    .drop { animation: drop 1.1s linear infinite; }
+    .d2 { animation-delay: 0.35s; }
+    .d3 { animation-delay: 0.7s; }
+    @media (prefers-reduced-motion: reduce) { .cloud, .drop { animation: none; } }
+  </style>
+  <g fill="none" stroke-linecap="round">
+    <path class="cloud" d="M14 30 C6 30, 6 19, 14 19 C15 11, 27 9, 30 16 C34 11, 44 14, 42 22 C48 23, 48 30, 41 30 Z" stroke="#14130F" stroke-width="2.4" fill="#14130F" fill-opacity="0.08"/>
+    <path class="drop" d="M19 35 L17 41" stroke="#2F5F86" stroke-width="2.6"/>
+    <path class="drop d2" d="M28 35 L26 41" stroke="#2F5F86" stroke-width="2.6"/>
+    <path class="drop d3" d="M37 35 L35 41" stroke="#2F5F86" stroke-width="2.6"/>
+  </g>
+</svg>
