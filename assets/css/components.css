@@ -190,28 +190,84 @@ body[data-verdict='stop'] { --stroke: var(--stop-wash); }
 .card__band[data-level='3'],
 .card__band[data-level='4'] { color: var(--stop-ink); }
 
-/* Regional strip */
-.strip {
-  padding: 14px var(--space-4);
+/* Rain areas: NEA's 70 km rain image over an ink map of Singapore.
+   ui.js places the layers by latitude and longitude, in % of the map box. */
+.rain {
+  padding: 14px var(--space-3) var(--space-3);
   gap: var(--space-2);
+  border-radius: 24px 18px 26px 20px;
 }
 
-.strip__grid {
-  display: grid;
-  grid-template-columns: repeat(5, minmax(0, 1fr));
-  gap: var(--space-1);
-  text-align: center;
+.rain__head {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  padding: 0 var(--space-1);
 }
 
-.strip__item dt {
+/* Same shape as RAIN_VIEW in config.js. */
+.rain__map {
+  position: relative;
+  overflow: hidden;
+  aspect-ratio: 326 / 220;
+  border-radius: 18px 14px 20px 12px;
+  background: var(--sea-wash);
+}
+
+.rain__layer {
+  position: absolute;
+  display: block;
+  max-width: none;
+}
+
+.rain__layer--rain {
+  opacity: 0.85;
+}
+
+.rain .card__note {
+  padding: 0 var(--space-1);
+}
+
+/* The chosen region: a ringed ink dot with its name above. */
+.rain__pin {
+  position: absolute;
+  width: 11px;
+  height: 11px;
+  margin: -5.5px 0 0 -5.5px;
+  box-sizing: border-box;
+  border: 1.8px solid var(--ink);
+  border-radius: 50%;
+  background: radial-gradient(circle, var(--ink) 0 2.2px, transparent 2.6px);
+}
+
+.rain__pin-label {
+  position: absolute;
+  bottom: calc(100% + 2px);
+  left: 50%;
+  transform: translateX(-50%);
+  font-family: var(--font-display);
   font-size: 12px;
+  font-weight: 600;
+  white-space: nowrap;
+  color: var(--ink);
+  text-shadow: 0 0 2px var(--on-ink), 0 0 3px var(--on-ink), 0 0 4px var(--on-ink);
+}
+
+.rain__legend {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: 0 var(--space-1);
+  font-size: 11px;
   color: var(--ink-soft);
 }
 
-.strip__item dd {
-  font-family: var(--font-display);
-  font-size: 18px;
-  font-weight: 600;
+/* NEA's rain-intensity colours, light to heavy. */
+.rain__scale {
+  flex: 1;
+  height: 8px;
+  border-radius: 6px 3px 5px 2px;
+  background: linear-gradient(90deg, #00ffff, #00ca11, #fff000, #ff7200, #e50000, #ff00ff);
 }
 
 /* Info page: verdict rules and icons */

@@ -2,7 +2,7 @@
 // It caches only the app's own files. Air-quality readings and forecasts come from
 // data.gov.sg and are never intercepted or cached here, so they are always live.
 
-const CACHE = 'cancycle-shell-v2';
+const CACHE = 'cancycle-shell-v3';
 const SHELL = [
   './',
   'index.html',
@@ -19,6 +19,7 @@ const SHELL = [
   'assets/js/rules.js',
   'assets/js/store.js',
   'assets/js/ui.js',
+  'assets/js/map.js',
   'assets/fonts/fraunces-latin-opsz.woff2',
   'assets/images/art/paper-grain.svg',
   'assets/images/art/ink-wheel.svg',
@@ -33,6 +34,7 @@ const SHELL = [
   'assets/images/icons/face-band-2.svg',
   'assets/images/icons/face-band-3.svg',
   'assets/images/icons/icon.svg',
+  'assets/images/map/singapore.svg',
 ];
 
 self.addEventListener('install', (event) => {

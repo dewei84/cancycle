@@ -1,7 +1,7 @@
 // Fetches and parses the two NEA feeds from data.gov.sg.
 // Parsers are exported separately so they can be tested against saved responses.
 
-import { PM25_URL, FORECAST_URL, REGIONS, REQUEST_TIMEOUT_MS } from './config.js';
+import { PM25_URL, FORECAST_URL, RADAR_URL, REGIONS, REQUEST_TIMEOUT_MS } from './config.js';
 
 function toNumber(value) {
   if (value === null || value === undefined || value === '') return null;
@@ -77,6 +77,36 @@ export function parseForecast(json) {
   };
 }
 
+// Real-time weather radar API (70 km) ->
+// { timestamp, imageUrl, expiresAt, bounds: { west, north, east, south } }
+// The image is a transparent PNG of rain areas only; its link expires after about 20 minutes.
+export function parseRadar(json) {
+  if (!json || json.code !== 0) {
+    throw new Error(json?.errorMsg || 'Weather radar API returned an error');
+  }
+  const records = (json.data?.records ?? []).filter((r) => typeof r?.image?.url === 'string');
+  const latest = newest(records);
+  if (!latest) throw new Error('Weather radar API returned no image');
+
+  const box = json.data.boundaryBox;
+  const bounds = {
+    west: toNumber(box?.upperLeft?.longitude),
+    north: toNumber(box?.upperLeft?.latitude),
+    east: toNumber(box?.lowerRight?.longitude),
+    south: toNumber(box?.lowerRight?.latitude),
+  };
+  if (Object.values(bounds).some((v) => v === null) || bounds.east <= bounds.west || bounds.north <= bounds.south) {
+    throw new Error('Weather radar API returned no usable map position');
+  }
+
+  return {
+    timestamp: latest.timestamp,
+    imageUrl: latest.image.url,
+    expiresAt: latest.image.urlExpiresAt ?? null,
+    bounds,
+  };
+}
+
 async function getJson(url, fetchImpl) {
   const controller = new AbortController();
   const timer = setTimeout(() => controller.abort(), REQUEST_TIMEOUT_MS);
@@ -95,4 +125,8 @@ export async function fetchPm25(fetchImpl = fetch) {
 
 export async function fetchForecast(fetchImpl = fetch) {
   return parseForecast(await getJson(FORECAST_URL, fetchImpl));
+}
+
+export async function fetchRadar(fetchImpl = fetch) {
+  return parseRadar(await getJson(RADAR_URL, fetchImpl));
 }

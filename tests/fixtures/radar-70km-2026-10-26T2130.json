@@ -1,0 +1,38 @@
+{
+  "code": 0,
+  "data": {
+    "projection": {
+      "type": "Azimuthal Equidistant",
+      "center": {
+        "longitude": 103.972583,
+        "latitude": 1.34911
+      }
+    },
+    "boundaryBox": {
+      "upperLeft": {
+        "longitude": 103.342685,
+        "latitude": 1.97854
+      },
+      "lowerRight": {
+        "longitude": 104.602315,
+        "latitude": 0.719515
+      },
+      "crs": "EPSG:4326"
+    },
+    "records": [
+      {
+        "timestamp": "2026-10-26T21:30:00+08:00",
+        "updatedTimestamp": "2026-10-26T21:29:14+08:00",
+        "image": {
+          "url": "https://dgs-backend-app-assets-production.s3.ap-southeast-1.amazonaws.com/nea-rain-radar-images/png/70km/2026/10/26/rain_70km_202610262130.png?X-Amz-Expires=1200&X-Amz-Signature=REDACTED",
+          "urlExpiresAt": "2026-10-26T21:50:23+08:00",
+          "label": "Transparent_RainAreas_70km_2026102613300000dBR.png",
+          "range": "70km",
+          "format": "png"
+        }
+      }
+    ],
+    "paginationToken": null
+  },
+  "errorMsg": ""
+}

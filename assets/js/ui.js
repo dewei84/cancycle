@@ -1,7 +1,8 @@
 // Renders app state into the page. All DOM writes live here.
 
-import { REGIONS, TIME_ZONE } from './config.js';
-import { pm25Band, displayForecast } from './rules.js';
+import { REGIONS, TIME_ZONE, MAP_BOUNDS, RAIN_VIEW, RADAR_STALE_AFTER_MS } from './config.js';
+import { pm25Band, displayForecast, isStale } from './rules.js';
+import { placeBox, placePoint } from './map.js';
 
 const $ = (id) => document.getElementById(id);
 
@@ -16,6 +17,19 @@ const dayFormat = new Intl.DateTimeFormat('en-SG', {
   day: 'numeric',
   month: 'short',
 });
+
+// NEA's style, as in its forecast windows: "9.30 pm".
+const clockFormat = new Intl.DateTimeFormat('en-SG', {
+  timeZone: TIME_ZONE,
+  hour: 'numeric',
+  minute: '2-digit',
+  hour12: true,
+});
+
+function formatClock(iso) {
+  const t = Date.parse(iso);
+  return Number.isNaN(t) ? '' : clockFormat.format(t).replace(':', '.').toLowerCase();
+}
 
 function formatTime(iso) {
   const t = Date.parse(iso);
@@ -71,11 +85,6 @@ function setIcon(img, icon) {
 }
 
 function renderPm(pm, region, todayLabel) {
-  for (const cell of document.querySelectorAll('[data-region-value]')) {
-    const value = pm?.readings?.[cell.dataset.regionValue];
-    cell.textContent = typeof value === 'number' ? String(value) : '–';
-  }
-
   const value = pm?.readings?.[region];
   const band = pm25Band(value);
   $('pm-value').textContent = band ? String(value) : '–';
@@ -126,14 +135,67 @@ function renderWeather(weather, forecast) {
   $('wx-note').textContent = period ? `${period} · ${areas}` : areas;
 }
 
-// state: { region, pm, forecast, weather, forecastExpired, decision, stale, errors: { pm, forecast }, now }
+function setBox(el, box) {
+  el.style.left = `${box.left}%`;
+  el.style.top = `${box.top}%`;
+  el.style.width = `${box.width}%`;
+  el.style.height = `${box.height}%`;
+}
+
+setBox($('rain-land'), placeBox(MAP_BOUNDS, RAIN_VIEW));
+
+// The image link expires after about 20 minutes. If it fails, hide the rain layer
+// until the next refresh brings a new link.
+let failedImage = null;
+$('rain-image').addEventListener('error', () => {
+  failedImage = $('rain-image').getAttribute('src');
+  $('rain-image').hidden = true;
+  $('rain-note').textContent = "The rain-areas image couldn't be loaded.";
+  $('rain-note').hidden = false;
+});
+
+function renderRainAreas(radar, region, error, now) {
+  const label = regionLabel(region);
+  const place = REGIONS.find((r) => r.id === region);
+  const pin = placePoint(place.latitude, place.longitude, RAIN_VIEW);
+  $('rain-pin').style.left = `${pin.left}%`;
+  $('rain-pin').style.top = `${pin.top}%`;
+  $('rain-pin-label').textContent = label;
+
+  const image = $('rain-image');
+  const broken = Boolean(radar) && failedImage === radar.imageUrl;
+  if (radar) {
+    setBox(image, placeBox(radar.bounds, RAIN_VIEW));
+    if (image.getAttribute('src') !== radar.imageUrl) image.setAttribute('src', radar.imageUrl);
+  }
+  image.hidden = !radar || broken;
+  $('rain-time').textContent = radar ? formatClock(radar.timestamp) : '';
+
+  let note = '';
+  if (error) note = "Rain areas couldn't be loaded.";
+  else if (broken) note = "The rain-areas image couldn't be loaded.";
+  else if (radar && isStale(radar.timestamp, now, RADAR_STALE_AFTER_MS)) note = 'This rain-areas image is out of date.';
+  $('rain-note').textContent = note;
+  $('rain-note').hidden = !note;
+
+  const time = radar ? ` at ${formatClock(radar.timestamp)}` : '';
+  $('rain-map').setAttribute(
+    'aria-label',
+    radar
+      ? `Map of NEA rain areas around Singapore${time}, with ${label} marked.`
+      : `Map of Singapore with ${label} marked. No rain-areas image right now.`,
+  );
+}
+
+// state: { region, pm, forecast, radar, weather, forecastExpired, decision, stale, errors: { pm, forecast, radar }, now }
 export function render(state) {
-  const { region, pm, forecast, weather, decision, stale, errors, now } = state;
+  const { region, pm, forecast, radar, weather, decision, stale, errors, now } = state;
   const todayLabel = dayFormat.format(now);
 
   renderRegion(region);
   renderPm(pm, region, todayLabel);
   renderWeather(weather, forecast);
+  renderRainAreas(radar, region, errors.radar, now);
 
   const verdict = decision.verdict;
   document.body.dataset.verdict = verdict ? verdict.id : 'unknown';

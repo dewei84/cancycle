@@ -41,6 +41,11 @@ img {
   max-width: 100%;
 }
 
+/* Keep the hidden attribute working on elements that set their own display. */
+[hidden] {
+  display: none !important;
+}
+
 button {
   font: inherit;
   color: inherit;

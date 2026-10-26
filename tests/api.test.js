@@ -7,6 +7,8 @@ import {
   nearestRegion,
   fetchPm25,
   fetchForecast,
+  parseRadar,
+  fetchRadar,
 } from '../assets/js/api.js';
 import { decide, regionWeather } from '../assets/js/rules.js';
 
@@ -15,6 +17,8 @@ const fixture = (name) =>
 
 const pm25Json = fixture('pm25-2026-10-25T1200.json');
 const forecastJson = fixture('two-hr-forecast-2026-10-26T1930.json');
+// Real response; the image link's signature is removed (it expired after 20 minutes anyway).
+const radarJson = fixture('radar-70km-2026-10-26T2130.json');
 
 function fakeFetch(responses) {
   const calls = [];
@@ -110,8 +114,33 @@ test('fetchForecast calls the 2-hour forecast endpoint', async () => {
   assert.equal(calls[0], 'https://api-open.data.gov.sg/v2/real-time/api/two-hr-forecast');
 });
 
+test('parses the real 70 km radar response', () => {
+  const r = parseRadar(radarJson);
+  assert.equal(r.timestamp, '2026-10-26T21:30:00+08:00');
+  assert.match(r.imageUrl, /^https:\/\/dgs-backend-app-assets-production\.s3\.ap-southeast-1\.amazonaws\.com\/nea-rain-radar-images\/png\/70km\//);
+  assert.equal(r.expiresAt, '2026-10-26T21:50:23+08:00');
+  assert.deepEqual(r.bounds, { west: 103.342685, north: 1.97854, east: 104.602315, south: 0.719515 });
+});
+
+test('radar parser rejects errors, missing images and bad map positions', () => {
+  assert.throws(() => parseRadar({ code: 1, errorMsg: 'nope' }), /nope/);
+  const noImage = structuredClone(radarJson);
+  noImage.data.records = [];
+  assert.throws(() => parseRadar(noImage), /no image/);
+  const noBox = structuredClone(radarJson);
+  delete noBox.data.boundaryBox;
+  assert.throws(() => parseRadar(noBox), /map position/);
+});
+
+test('fetchRadar calls the 70 km radar endpoint', async () => {
+  const { impl, calls } = fakeFetch([radarJson]);
+  await fetchRadar(impl);
+  assert.equal(calls[0], 'https://api-open.data.gov.sg/v2/real-time/api/weather-radar-images/70km');
+});
+
 test('a failed request is reported as an error', async () => {
   const impl = async () => ({ ok: false, status: 503, json: async () => ({}) });
   await assert.rejects(fetchPm25(impl), /503/);
   await assert.rejects(fetchForecast(impl), /503/);
+  await assert.rejects(fetchRadar(impl), /503/);
 });
