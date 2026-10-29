@@ -60,6 +60,35 @@ body:not([data-verdict='loading']) .verdict {
   animation: rise 0.8s ease-out both;
 }
 
+/* The "See rain areas" arrow nudges right every few seconds. */
+@keyframes nudge {
+  0%, 70%, 100% { transform: translateX(0); }
+  80% { transform: translateX(4px); }
+  90% { transform: translateX(0); }
+}
+
+.card__more-arrow {
+  animation: nudge 2.6s ease-in-out infinite;
+}
+
+/* Thundery dots on the rain sheet breathe slowly. */
+@keyframes breathe {
+  50% { opacity: 0.55; }
+}
+
+.sheet__dots .dot--thundery {
+  animation: breathe 2.4s ease-in-out infinite;
+}
+
+@keyframes sheet-up {
+  from { transform: translateY(40px); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
+
+.sheet[open] {
+  animation: sheet-up 0.4s cubic-bezier(0.2, 0.7, 0.2, 1) both;
+}
+
 @media (prefers-reduced-motion: reduce) {
   *,
   *::before,

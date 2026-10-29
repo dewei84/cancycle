@@ -1,8 +1,8 @@
 // Renders app state into the page. All DOM writes live here.
 
 import { REGIONS, TIME_ZONE, MAP_BOUNDS, RAIN_VIEW, RADAR_STALE_AFTER_MS } from './config.js';
-import { pm25Band, displayForecast, isStale } from './rules.js';
-import { placeBox } from './map.js';
+import { pm25Band, displayForecast, isStale, regionRainAreas } from './rules.js';
+import { placeBox, placePoint } from './map.js';
 
 const $ = (id) => document.getElementById(id);
 
@@ -135,6 +135,72 @@ function renderWeather(weather, forecast) {
   $('wx-note').textContent = period ? `${period} · ${areas}` : areas;
 }
 
+// The weather card opens the rain sheet only when rain is forecast for the region.
+function setWeatherTappable(tappable) {
+  $('wx-more').hidden = !tappable;
+  $('wx-card').classList.toggle('card--tappable', tappable);
+  if (!tappable && $('rain-sheet').open) $('rain-sheet').close();
+}
+
+$('wx-more').addEventListener('click', () => $('rain-sheet').showModal());
+$('sheet-close').addEventListener('click', () => $('rain-sheet').close());
+// A tap on the dimmed page behind the sheet closes it.
+$('rain-sheet').addEventListener('click', (event) => {
+  if (event.target === $('rain-sheet')) $('rain-sheet').close();
+});
+
+function groupLine(kind, names, modifier) {
+  const p = document.createElement('p');
+  p.className = modifier ? `sheet__group sheet__group--${modifier}` : 'sheet__group';
+  const label = document.createElement('span');
+  label.className = 'sheet__kind';
+  label.textContent = `${kind}:`;
+  p.append(label, ` ${names.join(', ')}`);
+  return p;
+}
+
+function renderRainSheet(forecast, region) {
+  const sheet = forecast ? regionRainAreas(forecast.areas, region) : null;
+  const label = regionLabel(region);
+  const rainCount = sheet ? sheet.rain.length : 0;
+
+  const period = forecast?.validPeriod?.text;
+  const count = sheet ? `rain in ${rainCount} of ${sheet.totalAreas} areas` : 'no forecast';
+  $('sheet-summary').textContent = [period, label, count].filter(Boolean).join(' · ');
+
+  const dots = (sheet?.rain ?? []).map((a) => {
+    const dot = document.createElement('span');
+    dot.className = a.thundery ? 'dot dot--thundery' : 'dot';
+    const at = placePoint(a.latitude, a.longitude, RAIN_VIEW);
+    dot.style.left = `${at.left}%`;
+    dot.style.top = `${at.top}%`;
+    return dot;
+  });
+  $('sheet-dots').replaceChildren(...dots);
+  $('sheet-legend-thundery').hidden = !(sheet?.rain ?? []).some((a) => a.thundery);
+  $('sheet-map').setAttribute(
+    'aria-label',
+    `Map of Singapore with a dot for each of the ${rainCount} NEA forecast areas in ${label} that are forecast to rain.`,
+  );
+
+  $('sheet-region').textContent = label;
+  const lines = (sheet?.groups ?? []).map((g) =>
+    groupLine(g.forecast, g.names, g.thundery ? 'thundery' : ''),
+  );
+  if (sheet?.dry.length) lines.push(groupLine('No rain', sheet.dry, 'dry'));
+  if (lines.length === 0) {
+    const p = document.createElement('p');
+    p.className = 'sheet__group';
+    p.textContent = `No rain is forecast for ${label} right now.`;
+    lines.push(p);
+  }
+  $('sheet-groups').replaceChildren(...lines);
+
+  $('sheet-source').textContent = forecast?.timestamp
+    ? `NEA 2-hour forecast, issued ${formatClock(forecast.timestamp)}. Each dot is at NEA’s label point for the area.`
+    : '';
+}
+
 function setBox(el, box) {
   el.style.left = `${box.left}%`;
   el.style.top = `${box.top}%`;
@@ -143,6 +209,7 @@ function setBox(el, box) {
 }
 
 setBox($('rain-land'), placeBox(MAP_BOUNDS, RAIN_VIEW));
+setBox($('sheet-land'), placeBox(MAP_BOUNDS, RAIN_VIEW));
 
 // The image link expires after about 20 minutes. If it fails, hide the rain layer
 // until the next refresh brings a new link.
@@ -187,6 +254,8 @@ export function render(state) {
   renderRegion(region);
   renderPm(pm, region, todayLabel);
   renderWeather(weather, forecast);
+  setWeatherTappable(Boolean(weather?.raining));
+  renderRainSheet(weather ? forecast : null, region);
   renderRainAreas(radar, errors.radar, now);
 
   const verdict = decision.verdict;

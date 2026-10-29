@@ -117,3 +117,42 @@ export function forecastExpired(validPeriod, now) {
   if (Number.isNaN(end)) return true;
   return now > end;
 }
+
+// The rain sheet for one region: which of its areas are forecast to rain, grouped by
+// NEA's wording, heaviest first. Returns null when the region has no areas.
+// -> { totalAreas, rain: [{ name, forecast, latitude, longitude, thundery }],
+//      groups: [{ forecast, thundery, names }], dry: [names] }
+export function regionRainAreas(areas, region) {
+  const mine = (areas ?? []).filter((a) => a.region === region);
+  if (mine.length === 0) return null;
+  const byName = (a, b) => a.name.localeCompare(b.name);
+  const heaviness = (f) => RAIN_KEYS.indexOf(f.trim().toLowerCase());
+  const rain = mine
+    .filter((a) => isRainForecast(a.forecast))
+    .map((a) => ({
+      name: a.name,
+      forecast: displayForecast(a.forecast.trim()),
+      latitude: a.latitude,
+      longitude: a.longitude,
+      thundery: /thundery/i.test(a.forecast),
+    }))
+    .sort(byName);
+
+  const groups = [];
+  for (const a of rain) {
+    let group = groups.find((g) => g.forecast === a.forecast);
+    if (!group) {
+      group = { forecast: a.forecast, thundery: a.thundery, names: [] };
+      groups.push(group);
+    }
+    group.names.push(a.name);
+  }
+  groups.sort((a, b) => heaviness(b.forecast) - heaviness(a.forecast));
+
+  return {
+    totalAreas: mine.length,
+    rain,
+    groups,
+    dry: mine.filter((a) => !isRainForecast(a.forecast)).sort(byName).map((a) => a.name),
+  };
+}

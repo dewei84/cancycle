@@ -29,6 +29,7 @@ Any other forecast (for example Fair, Partly Cloudy, Cloudy, Hazy) counts as Not
 - **Verdict** with NEA's advice, or a rain note when rain is forecast.
 - **PM2.5 card** for your region, with an ink-drawn face for the band: smiling (Band 1), frowning (Band 2) or masked (Bands 3 and 4).
 - **Weather card** for the next 2 hours: an animated sun or rain cloud, NEA's forecast wording and the forecast window.
+- When rain is forecast for your region, the weather card shows **See rain areas**. Tap the card to open a sheet with a map dot for each area in your region that NEA forecasts rain for (ringed for thundery showers), and a list of those areas by NEA's wording, plus the areas with no rain.
 - **Rain areas**: NEA's latest 70 km rain-areas image over an ink map of Singapore's coastline and reservoirs, with a light-to-heavy colour scale. It is for looking at only; the verdict uses the 2-hour forecast.
 - An **info button (ⓘ)** next to refresh opens a page with these verdict rules and the weather icons; close it to return home.
 
