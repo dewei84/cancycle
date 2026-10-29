@@ -10,7 +10,7 @@ import {
   parseRadar,
   fetchRadar,
 } from '../assets/js/api.js';
-import { decide, regionWeather } from '../assets/js/rules.js';
+import { decide, regionWeather, regionRainAreas } from '../assets/js/rules.js';
 
 const fixture = (name) =>
   JSON.parse(readFileSync(new URL(`./fixtures/${name}`, import.meta.url), 'utf8'));
@@ -98,6 +98,30 @@ test('real data with showers in one East area gives "Go back to sleep"', () => {
   assert.equal(decide({ pm25: 34, raining: weather.raining }).verdict.label, 'Go back to sleep');
   // West has no rain, so it is unaffected.
   assert.equal(regionWeather(parseForecast(json).areas, 'west').raining, false);
+});
+
+test('forecast areas keep NEA\'s label point', () => {
+  const bedok = parseForecast(forecastJson).areas.find((a) => a.name === 'Bedok');
+  assert.equal(bedok.latitude, 1.321);
+  assert.equal(bedok.longitude, 103.924);
+});
+
+test('real data: the rain sheet lists only the selected region, heaviest rain first', () => {
+  // NEA's forecast issued 12.25 pm on 29 Oct 2026, for these areas, on the 26 Oct area list.
+  const json = structuredClone(forecastJson);
+  const set = { Bedok: 'Showers', Hougang: 'Showers', 'Paya Lebar': 'Showers', Punggol: 'Showers',
+    Sengkang: 'Showers', City: 'Thundery Showers', Woodlands: 'Showers' };
+  for (const f of json.data.items[0].forecasts) if (set[f.area]) f.forecast = set[f.area];
+  const east = regionRainAreas(parseForecast(json).areas, 'east');
+  assert.equal(east.totalAreas, 10);
+  assert.deepEqual(east.rain.map((a) => a.name), ['Bedok', 'Hougang', 'Paya Lebar', 'Punggol', 'Sengkang']);
+  assert.deepEqual(east.groups, [
+    { forecast: 'Showers', thundery: false, names: ['Bedok', 'Hougang', 'Paya Lebar', 'Punggol', 'Sengkang'] },
+  ]);
+  assert.deepEqual(east.dry, ['Changi', 'Pasir Ris', 'Pulau Tekong', 'Pulau Ubin', 'Tampines']);
+  assert.ok(east.rain.every((a) => typeof a.latitude === 'number' && typeof a.longitude === 'number'));
+  const south = regionRainAreas(parseForecast(json).areas, 'south');
+  assert.deepEqual(south.rain.map((a) => [a.name, a.thundery]), [['City', true]]);
 });
 
 test('fetchPm25 calls the real-time endpoint', async () => {

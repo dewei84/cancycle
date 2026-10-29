@@ -13,3 +13,11 @@ export function placeBox(box, view) {
     height: ((box.north - box.south) / spanY) * 100,
   };
 }
+
+// A point (latitude, longitude) -> { left, top } in % of the view.
+export function placePoint(latitude, longitude, view) {
+  return {
+    left: ((longitude - view.west) / (view.east - view.west)) * 100,
+    top: ((view.north - latitude) / (view.north - view.south)) * 100,
+  };
+}

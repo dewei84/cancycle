@@ -190,6 +190,50 @@ body[data-verdict='stop'] { --stroke: var(--stop-wash); }
 .card__band[data-level='3'],
 .card__band[data-level='4'] { color: var(--stop-ink); }
 
+/* "See rain areas" on the weather card, shown only when rain is forecast for the region.
+   Its ::after covers the whole card, so a tap anywhere on the card opens the rain sheet. */
+.card--tappable {
+  position: relative;
+  cursor: pointer;
+}
+
+.card__more {
+  margin-top: 6px;
+  padding: 8px 0 0;
+  border: 0;
+  border-top: 1px dashed rgba(47, 95, 134, 0.35);
+  background: none;
+  display: flex;
+  align-items: center;
+  gap: var(--space-1);
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--rain-ink);
+  text-align: left;
+  cursor: pointer;
+}
+
+.card__more::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+}
+
+.card__more:focus-visible {
+  outline: none;
+}
+
+.card--tappable:has(.card__more:focus-visible) {
+  outline: 2px solid var(--ink);
+  outline-offset: 2px;
+}
+
+.card__more-arrow {
+  width: 14px;
+  height: 14px;
+}
+
 /* Rain areas: NEA's 70 km rain image over an ink map of Singapore.
    ui.js places the layers by latitude and longitude, in % of the map box. */
 .rain {
@@ -243,6 +287,149 @@ body[data-verdict='stop'] { --stroke: var(--stop-wash); }
   height: 8px;
   border-radius: 6px 3px 5px 2px;
   background: linear-gradient(90deg, #00ffff, #00ca11, #fff000, #ff7200, #e50000, #ff00ff);
+}
+
+/* Rain sheet: the forecast rain areas in the selected region, over the same map. */
+.sheet {
+  width: 100%;
+  max-width: var(--max-width);
+  max-height: calc(100dvh - 48px);
+  margin: auto auto 0;
+  padding: 0;
+  border: 0;
+  border-radius: 30px 24px 0 0;
+  background: #f4f3ee;
+  color: var(--ink);
+  box-shadow: 0 -6px 24px rgba(20, 19, 15, 0.12);
+  overflow-y: auto;
+  overscroll-behavior: contain;
+}
+
+.sheet::backdrop {
+  background: rgba(20, 19, 15, 0.28);
+}
+
+.sheet__body {
+  padding: 10px 20px calc(var(--space-5) + env(safe-area-inset-bottom));
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.sheet__grip {
+  align-self: center;
+  width: 44px;
+  height: 5px;
+  border-radius: 3px;
+  background: rgba(20, 19, 15, 0.25);
+}
+
+.sheet__header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: var(--space-3);
+}
+
+.sheet__title {
+  font-family: var(--font-display);
+  font-size: 26px;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  line-height: 1.2;
+}
+
+.sheet__summary {
+  margin-top: var(--space-1);
+  font-size: 13px;
+  color: var(--ink-soft);
+}
+
+.sheet__dots {
+  position: absolute;
+  inset: 0;
+}
+
+.dot {
+  display: inline-block;
+  flex: none;
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  background: var(--rain-ink);
+}
+
+/* Thundery: a ring around a darker dot. */
+.dot--thundery {
+  width: 15px;
+  height: 15px;
+  border: 1.5px solid var(--thunder-ink);
+  background: radial-gradient(circle, var(--thunder-ink) 0 3.5px, transparent 4px);
+}
+
+.sheet__dots .dot {
+  position: absolute;
+  transform: translate(-50%, -50%);
+  opacity: 0.9;
+}
+
+.sheet__legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px 16px;
+  font-size: 12px;
+  color: var(--ink-soft);
+}
+
+.sheet__legend > span {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.sheet__legend .dot--thundery {
+  width: 13px;
+  height: 13px;
+  background: radial-gradient(circle, var(--thunder-ink) 0 3px, transparent 3.5px);
+}
+
+.sheet__list {
+  gap: 6px;
+  padding: var(--space-3) 14px;
+  border-radius: 22px 16px 24px 18px;
+}
+
+.sheet__region {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: 17px;
+  font-weight: 600;
+}
+
+.sheet__group {
+  font-size: 13px;
+  line-height: 1.45;
+}
+
+.sheet__group + .sheet__group {
+  margin-top: 6px;
+}
+
+.sheet__kind {
+  font-weight: 600;
+  color: var(--rain-ink);
+}
+
+.sheet__group--thundery .sheet__kind {
+  color: var(--thunder-ink);
+}
+
+.sheet__group--dry {
+  color: var(--ink-soft);
+}
+
+.sheet__group--dry .sheet__kind {
+  color: var(--ink-soft);
 }
 
 /* Info page: verdict rules and icons */

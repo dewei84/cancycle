@@ -1,6 +1,6 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { placeBox } from '../assets/js/map.js';
+import { placeBox, placePoint } from '../assets/js/map.js';
 import { MAP_BOUNDS, RAIN_VIEW } from '../assets/js/config.js';
 
 const near = (a, b, msg) => assert.ok(Math.abs(a - b) < 0.5, `${msg}: ${a} vs ${b}`);
@@ -33,4 +33,12 @@ test('the map box in CSS has the same shape as the view', async () => {
   const { readFileSync } = await import('node:fs');
   const css = readFileSync(new URL('../assets/css/components.css', import.meta.url), 'utf8');
   assert.match(css, /aspect-ratio: 326 \/ 220;/);
+});
+
+test('a forecast area\'s label point lands inside the view, where placeBox puts it', () => {
+  const p = placePoint(1.321, 103.924, RAIN_VIEW); // Bedok
+  const b = placeBox({ west: 103.924, north: 1.321, east: 103.924, south: 1.321 }, RAIN_VIEW);
+  near(p.left, b.left, 'x');
+  near(p.top, b.top, 'y');
+  assert.ok(p.left > 0 && p.left < 100 && p.top > 0 && p.top < 100);
 });

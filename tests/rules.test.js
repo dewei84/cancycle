@@ -10,6 +10,7 @@ import {
   forecastExpired,
   RAIN_FORECASTS,
   displayForecast,
+  regionRainAreas,
 } from '../assets/js/rules.js';
 
 test('PM2.5 band edges follow NEA (55/56, 150/151, 250/251)', () => {
@@ -153,4 +154,23 @@ test('staleness uses the reading time', () => {
 test('the info page lists every rain forecast', () => {
   const html = readFileSync(new URL('../info.html', import.meta.url), 'utf8');
   for (const f of RAIN_FORECASTS) assert.ok(html.includes(f), f);
+});
+
+test('rain sheet groups rain areas by forecast, heaviest first, and keeps dry areas apart', () => {
+  const areas = [
+    { name: 'B', region: 'west', forecast: 'Light Rain', latitude: 1.3, longitude: 103.7 },
+    { name: 'A', region: 'west', forecast: 'Heavy Thundery Showers', latitude: 1.31, longitude: 103.71 },
+    { name: 'C', region: 'west', forecast: 'Light Rain', latitude: 1.32, longitude: 103.72 },
+    { name: 'D', region: 'west', forecast: 'Partly Cloudy (Day)', latitude: 1.33, longitude: 103.73 },
+    { name: 'E', region: 'east', forecast: 'Showers', latitude: 1.34, longitude: 103.94 },
+  ];
+  const west = regionRainAreas(areas, 'west');
+  assert.equal(west.totalAreas, 4);
+  assert.deepEqual(west.groups, [
+    { forecast: 'Heavy Thundery Showers', thundery: true, names: ['A'] },
+    { forecast: 'Light Rain', thundery: false, names: ['B', 'C'] },
+  ]);
+  assert.deepEqual(west.dry, ['D']);
+  assert.deepEqual(west.rain.map((a) => a.name), ['A', 'B', 'C']);
+  assert.equal(regionRainAreas(areas, 'north'), null);
 });

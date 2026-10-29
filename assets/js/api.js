@@ -49,7 +49,8 @@ export function nearestRegion(latitude, longitude) {
 }
 
 // Real-time 2-hour forecast API ->
-// { timestamp, validPeriod: { start, end, text }, areas: [{ name, region, forecast }] }
+// { timestamp, validPeriod: { start, end, text }, areas: [{ name, region, forecast, latitude, longitude }] }
+// latitude and longitude are NEA's label point for the area.
 export function parseForecast(json) {
   if (!json || json.code !== 0) {
     throw new Error(json?.errorMsg || 'Weather forecast API returned an error');
@@ -62,12 +63,14 @@ export function parseForecast(json) {
   for (const meta of json.data.area_metadata ?? []) {
     const lat = toNumber(meta?.label_location?.latitude);
     const lon = toNumber(meta?.label_location?.longitude);
-    if (meta?.name && lat !== null && lon !== null) places.set(meta.name, nearestRegion(lat, lon));
+    if (meta?.name && lat !== null && lon !== null) {
+      places.set(meta.name, { region: nearestRegion(lat, lon), latitude: lat, longitude: lon });
+    }
   }
 
   const areas = latest.forecasts
     .filter((f) => places.has(f?.area) && typeof f.forecast === 'string')
-    .map((f) => ({ name: f.area, region: places.get(f.area), forecast: f.forecast }));
+    .map((f) => ({ name: f.area, forecast: f.forecast, ...places.get(f.area) }));
   if (areas.length === 0) throw new Error('Weather forecast API returned no areas');
 
   return {

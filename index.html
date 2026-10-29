@@ -72,13 +72,17 @@
         <p class="card__band" id="pm-band"></p>
         <p class="card__note" id="pm-time"></p>
       </section>
-      <section class="card card--alt" aria-labelledby="wx-heading">
+      <section class="card card--alt" id="wx-card" aria-labelledby="wx-heading">
         <div class="card__head">
           <p class="card__label" id="wx-heading">Next 2 hrs · <span id="wx-region">East</span></p>
           <img class="card__icon" id="wx-icon" src="assets/images/icons/weather-sun.svg" alt="" width="56" height="56" hidden>
         </div>
         <p class="card__value card__value--text" id="wx-forecast">–</p>
         <p class="card__note" id="wx-note"></p>
+        <button class="card__more" id="wx-more" type="button" aria-haspopup="dialog" hidden>
+          See rain areas
+          <img class="card__more-arrow" src="assets/images/icons/arrow-right.svg" alt="" width="14" height="14">
+        </button>
       </section>
     </div>
 
@@ -98,6 +102,34 @@
         <span>Heavy</span>
       </div>
     </section>
+
+    <dialog class="sheet" id="rain-sheet" aria-labelledby="sheet-title">
+      <div class="sheet__body">
+        <span class="sheet__grip" aria-hidden="true"></span>
+        <header class="sheet__header">
+          <div>
+            <h2 class="sheet__title" id="sheet-title">Rain in the next 2 hrs</h2>
+            <p class="sheet__summary" id="sheet-summary"></p>
+          </div>
+          <button class="icon-button" id="sheet-close" type="button" aria-label="Close">
+            <img src="assets/images/icons/close.svg" alt="" width="20" height="20">
+          </button>
+        </header>
+        <div class="rain__map" id="sheet-map" role="img" aria-label="Map of Singapore">
+          <img class="rain__layer" id="sheet-land" src="assets/images/map/singapore.svg" alt="">
+          <div class="sheet__dots" id="sheet-dots"></div>
+        </div>
+        <div class="sheet__legend">
+          <span><span class="dot" aria-hidden="true"></span>Rain or showers</span>
+          <span id="sheet-legend-thundery"><span class="dot dot--thundery" aria-hidden="true"></span>Thundery</span>
+        </div>
+        <section class="card sheet__list" aria-labelledby="sheet-region">
+          <h3 class="sheet__region" id="sheet-region"></h3>
+          <div id="sheet-groups"></div>
+        </section>
+        <p class="card__note" id="sheet-source"></p>
+      </div>
+    </dialog>
 
     <footer class="app__footer">
       Data: NEA via <a href="https://data.gov.sg">data.gov.sg</a>. Refreshes every 15 minutes.
