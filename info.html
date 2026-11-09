@@ -29,7 +29,7 @@
       </a>
     </header>
 
-    <p class="info__intro">Two inputs for your region: the latest 1-hr PM2.5 reading and the 2-hour weather forecast. Rain always wins.</p>
+    <p class="info__intro">Two inputs for your region: the latest 1-hr PM2.5 reading and the 2-hour weather forecast. Rain wins, except light rain on a clean-air day.</p>
 
     <section class="card" aria-label="Verdict rules">
       <table class="rules">
@@ -40,14 +40,16 @@
           <tr><td>Not raining</td><td>Band 1</td><td class="rules__verdict rules__verdict--go">Yes, let’s go!</td></tr>
           <tr><td>Not raining</td><td>Band 2</td><td class="rules__verdict rules__verdict--easy">Better not</td></tr>
           <tr><td>Not raining</td><td>Band 3 or 4</td><td class="rules__verdict rules__verdict--stop">Go back to sleep</td></tr>
-          <tr><td class="rules__rain">Raining</td><td>Any band</td><td class="rules__verdict rules__verdict--stop">Go back to sleep</td></tr>
+          <tr><td class="rules__rain">Light Rain only</td><td>Band 1</td><td class="rules__verdict rules__verdict--maybe">Maybe, check the map</td></tr>
+          <tr><td class="rules__rain">Light Rain only</td><td>Band 2, 3 or 4</td><td>Same as not raining</td></tr>
+          <tr><td class="rules__rain">Other rain</td><td>Any band</td><td class="rules__verdict rules__verdict--stop">Go back to sleep</td></tr>
         </tbody>
       </table>
     </section>
 
     <section class="info__section">
       <h2 class="info__heading">When is it “Raining”?</h2>
-      <p class="info__text" id="rain-list">When any forecast area in your region shows one of: Light Rain, Moderate Rain, Heavy Rain, Passing Showers, Light Showers, Showers, Heavy Showers, Thundery Showers, Heavy Thundery Showers, or Heavy Thundery Showers with Gusty Winds. Anything else (Fair, Cloudy, Hazy…) is Not raining.</p>
+      <p class="info__text" id="rain-list">When any forecast area in your region shows one of: Light Rain, Moderate Rain, Heavy Rain, Passing Showers, Light Showers, Showers, Heavy Showers, Thundery Showers, Heavy Thundery Showers, or Heavy Thundery Showers with Gusty Winds. Anything else (Fair, Cloudy, Hazy…) is Not raining. “Light Rain only” means every rainy area in your region says Light Rain; any heavier rain counts as Other rain.</p>
     </section>
 
     <section class="info__section">

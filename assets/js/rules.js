@@ -8,6 +8,7 @@
 
 export const VERDICTS = {
   go: { id: 'go', label: 'Yes, let’s go!', rank: 0 },
+  maybe: { id: 'maybe', label: 'Maybe, check the map', rank: 1 },
   easy: { id: 'easy', label: 'Better not', rank: 1 },
   stop: { id: 'stop', label: 'Go back to sleep', rank: 2 },
 };
@@ -76,9 +77,18 @@ function mostCommon(forecasts) {
   return [...counts.entries()].sort((a, b) => b[1] - a[1] || weight(b[0]) - weight(a[0]))[0]?.[0] ?? null;
 }
 
+// The only forecast mild enough for "Maybe, check the map".
+export const LIGHT_RAIN = 'Light Rain';
+
+function isLightRain(forecast) {
+  return typeof forecast === 'string' && forecast.trim().toLowerCase() === LIGHT_RAIN.toLowerCase();
+}
+
 // Sums up one region's forecast areas. A region is raining when ANY of its
-// areas is forecast to rain. Returns null when the region has no areas.
-// -> { raining, forecast, rainAreas, totalAreas }
+// areas is forecast to rain. lightRainOnly is true when it is raining and every
+// rainy area says Light Rain, so any heavier rain wins. Returns null when the
+// region has no areas.
+// -> { raining, lightRainOnly, forecast, rainAreas, totalAreas }
 export function regionWeather(areas, region) {
   const mine = (areas ?? []).filter((a) => a.region === region);
   if (mine.length === 0) return null;
@@ -86,6 +96,7 @@ export function regionWeather(areas, region) {
   const raining = rainy.length > 0;
   return {
     raining,
+    lightRainOnly: raining && rainy.every((a) => isLightRain(a.forecast)),
     // Show the rain that is coming when there is any; otherwise the usual weather.
     forecast: mostCommon((raining ? rainy : mine).map((a) => displayForecast(a.forecast))),
     rainAreas: rainy.length,
@@ -93,15 +104,23 @@ export function regionWeather(areas, region) {
   };
 }
 
-// Rain always gives "Go back to sleep". Otherwise the PM2.5 band decides, so
-// "Yes, let's go!" needs Band 1 and no rain. When the forecast is unknown
-// (raining is null), the PM2.5 band decides and the page says the forecast is missing.
-// Returns { verdict, advice, rain }; verdict and advice are null without a PM2.5 reading.
-export function decide({ pm25, raining = null }) {
+// Rain gives "Go back to sleep", except when the only rain is Light Rain:
+// - Light Rain with PM2.5 Band 1 gives "Maybe, check the map".
+// - Light Rain with Band 2 or worse: the PM2.5 band decides, as when it is dry.
+// Otherwise the PM2.5 band decides, so "Yes, let's go!" needs Band 1 and no rain.
+// When the forecast is unknown (raining is null), the PM2.5 band decides and the
+// page says the forecast is missing.
+// Returns { verdict, advice, rain, lightRain }: rain is true when rain set the
+// verdict; verdict and advice are null without a PM2.5 reading.
+export function decide({ pm25, raining = null, lightRainOnly = false }) {
   const pm = pm25Band(pm25);
-  if (!pm) return { verdict: null, advice: null, rain: false };
-  if (raining === true) return { verdict: VERDICTS.stop, advice: null, rain: true };
-  return { verdict: VERDICTS[pm.verdict], advice: pm.advice, rain: false };
+  if (!pm) return { verdict: null, advice: null, rain: false, lightRain: false };
+  if (raining === true && lightRainOnly) {
+    if (pm.band === 1) return { verdict: VERDICTS.maybe, advice: null, rain: true, lightRain: true };
+    return { verdict: VERDICTS[pm.verdict], advice: pm.advice, rain: false, lightRain: true };
+  }
+  if (raining === true) return { verdict: VERDICTS.stop, advice: null, rain: true, lightRain: false };
+  return { verdict: VERDICTS[pm.verdict], advice: pm.advice, rain: false, lightRain: false };
 }
 
 // True when the reading is older than maxAgeMs (or has no usable time).

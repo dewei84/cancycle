@@ -104,10 +104,37 @@
 body[data-verdict='go'] { --stroke: var(--go-wash); }
 body[data-verdict='easy'] { --stroke: var(--easy-wash); }
 body[data-verdict='stop'] { --stroke: var(--stop-wash); }
+body[data-verdict='maybe'] { --stroke: var(--rain-ink); }
 
 .verdict__advice {
   margin-top: 6px;
   font-size: 15px;
+}
+
+/* "See rain areas" under the "Maybe, check the map" verdict: a plain label like the
+   weather card's, with a full-size tap area. */
+.verdict__more {
+  align-self: flex-start;
+  min-height: var(--tap);
+  margin: -8px 0;
+  padding: 0;
+  border: 0;
+  background: none;
+  display: flex;
+  align-items: center;
+  gap: var(--space-1);
+  font: inherit;
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--rain-ink);
+  cursor: pointer;
+}
+
+.verdict__more[hidden] { display: none; }
+
+.verdict__more:focus-visible {
+  outline: 2px solid var(--ink);
+  outline-offset: 2px;
 }
 
 .verdict__reason {
@@ -497,6 +524,7 @@ body[data-verdict='stop'] { --stroke: var(--stop-wash); }
 .rules__verdict--go { color: var(--go-ink); }
 .rules__verdict--easy { color: var(--easy-ink); }
 .rules__verdict--stop { color: var(--stop-ink); }
+.rules__verdict--maybe { color: var(--rain-ink); }
 
 .rules__rain {
   font-weight: 600;
