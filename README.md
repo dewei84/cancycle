@@ -14,9 +14,11 @@ Outdoor cycling advisory based on NEA PM2.5 readings and the 2-hour weather fore
 | Not raining | 0–55 (Band 1, Normal) | Yes, let’s go! |
 | Not raining | 56–150 (Band 2, Elevated) | Better not |
 | Not raining | 151 and above (Band 3 High, Band 4 Very High) | Go back to sleep |
-| Raining | Any | Go back to sleep |
+| Light Rain only | 0–55 (Band 1, Normal) | Maybe, check the map |
+| Light Rain only | 56 and above (Band 2 to 4) | Same as Not raining |
+| Other rain | Any | Go back to sleep |
 
-Rain always wins: **Yes, let’s go!** needs PM2.5 Band 1 *and* no rain.
+**Yes, let’s go!** needs PM2.5 Band 1 *and* no rain. "Light Rain only" means every rainy area in your region is forecast as exactly Light Rain; any heavier rain counts as Other rain. With **Maybe, check the map**, a "See rain areas" link under the verdict opens the rain-areas sheet.
 
 **When is it "Raining"?** NEA forecasts the weather for 47 areas. The app leaves out four non-residential ones (Southern Islands, Western Islands, Pulau Tekong, Pulau Ubin). Each other area belongs to its nearest PM2.5 region, except Marine Parade and Kallang (East), Punggol and Sengkang (North) and Bukit Timah (Central), and a region counts as Raining if **any** of its areas is forecast as one of:
 

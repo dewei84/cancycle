@@ -143,6 +143,7 @@ function setWeatherTappable(tappable) {
 }
 
 $('wx-more').addEventListener('click', () => $('rain-sheet').showModal());
+$('verdict-more').addEventListener('click', () => $('rain-sheet').showModal());
 $('sheet-close').addEventListener('click', () => $('rain-sheet').close());
 // A tap on the dimmed page behind the sheet closes it.
 $('rain-sheet').addEventListener('click', (event) => {
@@ -263,8 +264,13 @@ export function render(state) {
   document.body.toggleAttribute('data-stale', Boolean(stale));
 
   $('verdict-label').textContent = verdict ? verdict.label : 'No data';
+  // "Maybe, check the map" points the rider to the rain sheet.
+  $('verdict-more').hidden = verdict?.id !== 'maybe';
   if (!verdict) {
     $('verdict-advice').textContent = '';
+  } else if (verdict.id === 'maybe') {
+    $('verdict-advice').textContent =
+      `Light rain in ${weather.rainAreas} of ${weather.totalAreas} ${regionLabel(region)} areas in the next 2 hours.`;
   } else if (decision.rain) {
     $('verdict-advice').textContent = `Rain is forecast for ${regionLabel(region)} in the next 2 hours.`;
   } else {

@@ -36,7 +36,8 @@
 }
 
 body[data-verdict='go'] { --spin-large: 9s; --spin-small: 16s; }
-body[data-verdict='easy'] { --spin-large: 28s; --spin-small: 46s; }
+body[data-verdict='easy'],
+body[data-verdict='maybe'] { --spin-large: 28s; --spin-small: 46s; }
 
 body[data-verdict='stop'] .art__wheel,
 body[data-verdict='unknown'] .art__wheel,

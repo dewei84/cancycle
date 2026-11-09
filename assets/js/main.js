@@ -29,7 +29,11 @@ function draw() {
     now,
     weather,
     forecastExpired: forecastExpiredNow,
-    decision: decide({ pm25, raining: weather ? weather.raining : null }),
+    decision: decide({
+      pm25,
+      raining: weather ? weather.raining : null,
+      lightRainOnly: weather ? weather.lightRainOnly : false,
+    }),
     stale: state.pm ? isStale(state.pm.timestamp, now, STALE_AFTER_MS) : false,
   });
 }

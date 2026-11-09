@@ -87,6 +87,7 @@ test('a region is raining when any one of its areas forecasts rain', () => {
   ];
   assert.deepEqual(regionWeather(areas, 'east'), {
     raining: true,
+    lightRainOnly: false,
     forecast: 'Light Showers',
     rainAreas: 1,
     totalAreas: 3,
@@ -173,4 +174,43 @@ test('rain sheet groups rain areas by forecast, heaviest first, and keeps dry ar
   assert.deepEqual(west.dry, ['D']);
   assert.deepEqual(west.rain.map((a) => a.name), ['A', 'B', 'C']);
   assert.equal(regionRainAreas(areas, 'north'), null);
+});
+
+test('Light Rain only with PM2.5 Band 1 gives "Maybe, check the map"', () => {
+  const d = decide({ pm25: 34, raining: true, lightRainOnly: true });
+  assert.equal(d.verdict.label, 'Maybe, check the map');
+  assert.equal(d.rain, true);
+  assert.equal(d.lightRain, true);
+  assert.equal(decide({ pm25: 55, raining: true, lightRainOnly: true }).verdict.id, 'maybe');
+});
+
+test('Light Rain only with Band 2 or worse: the PM2.5 band decides', () => {
+  assert.equal(decide({ pm25: 56, raining: true, lightRainOnly: true }).verdict.label, 'Better not');
+  assert.equal(decide({ pm25: 80, raining: true, lightRainOnly: true }).advice,
+    'Reduce strenuous outdoor activity for the next hour.');
+  assert.equal(decide({ pm25: 151, raining: true, lightRainOnly: true }).verdict.label, 'Go back to sleep');
+  assert.equal(decide({ pm25: 300, raining: true, lightRainOnly: true }).verdict.label, 'Go back to sleep');
+});
+
+test('other rain still gives "Go back to sleep" on Band 1', () => {
+  assert.equal(decide({ pm25: 34, raining: true }).verdict.label, 'Go back to sleep');
+  assert.equal(decide({ pm25: 34, raining: true, lightRainOnly: false }).verdict.id, 'stop');
+});
+
+test('lightRainOnly needs every rainy area to say Light Rain; heavier rain wins', () => {
+  const base = [
+    { name: 'Bedok', region: 'east', forecast: 'Light Rain' },
+    { name: 'Changi', region: 'east', forecast: 'Cloudy' },
+    { name: 'Tampines', region: 'east', forecast: 'Light Rain' },
+  ];
+  assert.equal(regionWeather(base, 'east').lightRainOnly, true);
+  assert.equal(regionWeather(base, 'east').forecast, 'Light Rain');
+  const heavier = base.map((a) => (a.name === 'Changi' ? { ...a, forecast: 'Showers' } : a));
+  assert.equal(regionWeather(heavier, 'east').lightRainOnly, false);
+  // Light Showers and Passing Showers are not Light Rain.
+  for (const f of ['Light Showers', 'Passing Showers']) {
+    assert.equal(regionWeather([{ name: 'Bedok', region: 'east', forecast: f }], 'east').lightRainOnly, false);
+  }
+  // Dry regions are never lightRainOnly.
+  assert.equal(regionWeather([{ name: 'Bedok', region: 'east', forecast: 'Cloudy' }], 'east').lightRainOnly, false);
 });
