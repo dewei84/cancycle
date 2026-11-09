@@ -5,6 +5,7 @@ import {
   parsePm25,
   parseForecast,
   nearestRegion,
+  areaRegion,
   fetchPm25,
   fetchForecast,
   parseRadar,
@@ -54,21 +55,37 @@ test('parses the real 2-hour forecast response', () => {
   const f = parseForecast(forecastJson);
   assert.equal(f.timestamp, '2026-10-26T19:30:00+08:00');
   assert.equal(f.validPeriod.text, '7.30 pm to 9.30 pm');
-  assert.equal(f.areas.length, 47);
+  assert.equal(f.areas.length, 43);
   assert.ok(f.areas.every((a) => a.forecast === 'Cloudy'));
 });
 
-test('forecast areas map to their nearest PM2.5 region', () => {
+test('forecast areas map to their PM2.5 region, with the rider\'s corrections', () => {
   const regionOf = Object.fromEntries(parseForecast(forecastJson).areas.map((a) => [a.name, a.region]));
-  const east = Object.keys(regionOf).filter((n) => regionOf[n] === 'east').sort();
-  assert.deepEqual(east, [
-    'Bedok', 'Changi', 'Hougang', 'Pasir Ris', 'Paya Lebar',
-    'Pulau Tekong', 'Pulau Ubin', 'Punggol', 'Sengkang', 'Tampines',
-  ]);
-  const counts = {};
-  for (const r of Object.values(regionOf)) counts[r] = (counts[r] ?? 0) + 1;
-  assert.deepEqual(counts, { central: 7, east: 10, west: 12, south: 12, north: 6 });
+  const byRegion = {};
+  for (const [name, r] of Object.entries(regionOf)) (byRegion[r] ??= []).push(name);
+  for (const names of Object.values(byRegion)) names.sort();
+  assert.deepEqual(byRegion, {
+    north: ['Mandai', 'Punggol', 'Seletar', 'Sembawang', 'Sengkang', 'Sungei Kadut', 'Woodlands', 'Yishun'],
+    south: ['Bukit Merah', 'City', 'Clementi', 'Geylang', 'Queenstown', 'Sentosa', 'Tanglin'],
+    east: ['Bedok', 'Changi', 'Hougang', 'Kallang', 'Marine Parade', 'Pasir Ris', 'Paya Lebar', 'Tampines'],
+    west: ['Boon Lay', 'Bukit Batok', 'Choa Chu Kang', 'Jalan Bahar', 'Jurong East', 'Jurong Island', 'Jurong West',
+      'Lim Chu Kang', 'Pioneer', 'Tengah', 'Tuas', 'Western Water Catchment'],
+    central: ['Ang Mo Kio', 'Bishan', 'Bukit Panjang', 'Bukit Timah', 'Central Water Catchment', 'Novena',
+      'Serangoon', 'Toa Payoh'],
+  });
   assert.equal(nearestRegion(1.432, 103.786528), 'north'); // Woodlands
+  assert.equal(areaRegion('Punggol', 1.401, 103.904), 'north');
+});
+
+test('non-residential areas are left out of the forecast', () => {
+  const names = parseForecast(forecastJson).areas.map((a) => a.name);
+  for (const n of ['Southern Islands', 'Western Islands', 'Pulau Tekong', 'Pulau Ubin']) {
+    assert.ok(!names.includes(n), n);
+  }
+  // Rain in an excluded area does not make its region rain.
+  const json = structuredClone(forecastJson);
+  json.data.items[0].forecasts.find((f) => f.area === 'Pulau Ubin').forecast = 'Heavy Rain';
+  assert.equal(regionWeather(parseForecast(json).areas, 'east').raining, false);
 });
 
 test('forecast parser picks the newest item and rejects errors', () => {
@@ -113,12 +130,14 @@ test('real data: the rain sheet lists only the selected region, heaviest rain fi
     Sengkang: 'Showers', City: 'Thundery Showers', Woodlands: 'Showers' };
   for (const f of json.data.items[0].forecasts) if (set[f.area]) f.forecast = set[f.area];
   const east = regionRainAreas(parseForecast(json).areas, 'east');
-  assert.equal(east.totalAreas, 10);
-  assert.deepEqual(east.rain.map((a) => a.name), ['Bedok', 'Hougang', 'Paya Lebar', 'Punggol', 'Sengkang']);
+  assert.equal(east.totalAreas, 8);
+  assert.deepEqual(east.rain.map((a) => a.name), ['Bedok', 'Hougang', 'Paya Lebar']);
   assert.deepEqual(east.groups, [
-    { forecast: 'Showers', thundery: false, names: ['Bedok', 'Hougang', 'Paya Lebar', 'Punggol', 'Sengkang'] },
+    { forecast: 'Showers', thundery: false, names: ['Bedok', 'Hougang', 'Paya Lebar'] },
   ]);
-  assert.deepEqual(east.dry, ['Changi', 'Pasir Ris', 'Pulau Tekong', 'Pulau Ubin', 'Tampines']);
+  assert.deepEqual(east.dry, ['Changi', 'Kallang', 'Marine Parade', 'Pasir Ris', 'Tampines']);
+  const north = regionRainAreas(parseForecast(json).areas, 'north');
+  assert.deepEqual(north.rain.map((a) => a.name), ['Punggol', 'Sengkang', 'Woodlands']);
   assert.ok(east.rain.every((a) => typeof a.latitude === 'number' && typeof a.longitude === 'number'));
   const south = regionRainAreas(parseForecast(json).areas, 'south');
   assert.deepEqual(south.rain.map((a) => [a.name, a.thundery]), [['City', true]]);
@@ -134,7 +153,7 @@ test('fetchPm25 calls the real-time endpoint', async () => {
 test('fetchForecast calls the 2-hour forecast endpoint', async () => {
   const { impl, calls } = fakeFetch([forecastJson]);
   const f = await fetchForecast(impl);
-  assert.equal(f.areas.length, 47);
+  assert.equal(f.areas.length, 43);
   assert.equal(calls[0], 'https://api-open.data.gov.sg/v2/real-time/api/two-hr-forecast');
 });
 

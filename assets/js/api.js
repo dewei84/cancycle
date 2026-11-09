@@ -1,7 +1,9 @@
 // Fetches and parses the two NEA feeds from data.gov.sg.
 // Parsers are exported separately so they can be tested against saved responses.
 
-import { PM25_URL, FORECAST_URL, RADAR_URL, REGIONS, REQUEST_TIMEOUT_MS } from './config.js';
+import {
+  PM25_URL, FORECAST_URL, RADAR_URL, REGIONS, REQUEST_TIMEOUT_MS, AREA_REGION_OVERRIDES, EXCLUDED_AREAS,
+} from './config.js';
 
 function toNumber(value) {
   if (value === null || value === undefined || value === '') return null;
@@ -48,9 +50,15 @@ export function nearestRegion(latitude, longitude) {
   return best;
 }
 
+// The PM2.5 region a forecast area counts towards: the rider's correction if
+// there is one, otherwise the region whose centre is nearest.
+export function areaRegion(name, latitude, longitude) {
+  return AREA_REGION_OVERRIDES[name] ?? nearestRegion(latitude, longitude);
+}
+
 // Real-time 2-hour forecast API ->
 // { timestamp, validPeriod: { start, end, text }, areas: [{ name, region, forecast, latitude, longitude }] }
-// latitude and longitude are NEA's label point for the area.
+// latitude and longitude are NEA's label point for the area. EXCLUDED_AREAS are dropped.
 export function parseForecast(json) {
   if (!json || json.code !== 0) {
     throw new Error(json?.errorMsg || 'Weather forecast API returned an error');
@@ -63,8 +71,8 @@ export function parseForecast(json) {
   for (const meta of json.data.area_metadata ?? []) {
     const lat = toNumber(meta?.label_location?.latitude);
     const lon = toNumber(meta?.label_location?.longitude);
-    if (meta?.name && lat !== null && lon !== null) {
-      places.set(meta.name, { region: nearestRegion(lat, lon), latitude: lat, longitude: lon });
+    if (meta?.name && lat !== null && lon !== null && !EXCLUDED_AREAS.includes(meta.name)) {
+      places.set(meta.name, { region: areaRegion(meta.name, lat, lon), latitude: lat, longitude: lon });
     }
   }
 
