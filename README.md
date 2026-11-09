@@ -18,7 +18,7 @@ Outdoor cycling advisory based on NEA PM2.5 readings and the 2-hour weather fore
 
 Rain always wins: **Yes, let’s go!** needs PM2.5 Band 1 *and* no rain.
 
-**When is it "Raining"?** NEA forecasts the weather for 47 areas. Each area belongs to its nearest PM2.5 region, and a region counts as Raining if **any** of its areas is forecast as one of:
+**When is it "Raining"?** NEA forecasts the weather for 47 areas. The app leaves out four non-residential ones (Southern Islands, Western Islands, Pulau Tekong, Pulau Ubin). Each other area belongs to its nearest PM2.5 region, except Marine Parade and Kallang (East), Punggol and Sengkang (North) and Bukit Timah (Central), and a region counts as Raining if **any** of its areas is forecast as one of:
 
 Light Rain, Moderate Rain, Heavy Rain, Passing Showers, Light Showers, Showers, Heavy Showers, Thundery Showers, Heavy Thundery Showers, Heavy Thundery Showers with Gusty Winds.
 

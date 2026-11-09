@@ -15,6 +15,20 @@ export const REGIONS = [
 ];
 export const DEFAULT_REGION = 'east';
 
+// Region corrections chosen by the rider, by NEA forecast area name. These win
+// over the nearest-centre rule.
+export const AREA_REGION_OVERRIDES = {
+  'Marine Parade': 'east',
+  Kallang: 'east',
+  Punggol: 'north',
+  Sengkang: 'north',
+  'Bukit Timah': 'central',
+};
+
+// NEA forecast areas left out of every count, verdict, list and map, because
+// they are not residential areas.
+export const EXCLUDED_AREAS = ['Southern Islands', 'Western Islands', 'Pulau Tekong', 'Pulau Ubin'];
+
 // Bounds are { west, north, east, south } in degrees.
 // The Singapore map in assets/images/map/singapore.svg (its whole viewBox).
 export const MAP_BOUNDS = { west: 103.59283, north: 1.48803, east: 104.0999, south: 1.14825 };
